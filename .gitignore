@@ -1,0 +1,29 @@
+.env
+.vscode
+source/.vs
+source/*/.vs
+source/*/bin
+source/*/obj
+*.pdb
+output/
+.codegraph/
+
+# ビルド成果物。build.bat が毎回生成するため追跡しない
+BepInEx/plugins/*.dll
+BepInEx (COM3D2)/plugins/*.dll
+
+# executing-plans の作業領域
+.superpowers/
+
+# Unity 2022 プロジェクトの生成物
+UnityProject2022/Library/
+UnityProject2022/Temp/
+UnityProject2022/Logs/
+UnityProject2022/UserSettings/
+UnityProject2022/Bundles/
+UnityProject2022/obj/
+UnityProject2022/*.csproj
+UnityProject2022/*.sln
+
+# Unity 5.6 プロジェクト。build-bundle.bat が UnityProject2022\Assets から毎回作る
+UnityProject56/

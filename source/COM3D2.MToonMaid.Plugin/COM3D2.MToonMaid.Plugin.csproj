@@ -1,0 +1,89 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- net471 = COM3D2.5 (Unity 2022.3)、net35 = COM3D2 (2.0, Unity 5.6)。build.ps1 が -f で片方ずつ作る -->
+    <TargetFrameworks>net471;net35</TargetFrameworks>
+    <AssemblyName>COM3D2.MToonMaid</AssemblyName>
+    <RootNamespace>COM3D2.MToonMaid.Plugin</RootNamespace>
+    <LangVersion>7.3</LangVersion>
+    <!-- バージョンの単一ソースは PluginInfo.cs（bump-version.bat が書き換える） -->
+    <!-- ゲームのインストール先。build.ps1 が .env から -p:COM3D25_DIR= / -p:COM3D2_DIR= で渡す -->
+    <COM3D25_DIR Condition=" '$(COM3D25_DIR)' == '' ">W:\COM3D2_5</COM3D25_DIR>
+    <!-- COM3D2_DIR に 2.5 の既定値を流用すると、2.0 版が 2.5 のアセンブリを参照して通ってしまうため、既定値を置かない -->
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net471' ">
+    <GameVersion>COM3D25</GameVersion>
+    <GameDir>$(COM3D25_DIR)</GameDir>
+    <ShaderBundle>Resources\mtoon_bundle</ShaderBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net35' ">
+    <GameVersion>COM3D2</GameVersion>
+    <GameDir>$(COM3D2_DIR)</GameDir>
+    <ShaderBundle>Resources\mtoon_bundle_com3d2</ShaderBundle>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Managed>$(GameDir)\COM3D2x64_Data\Managed</Managed>
+    <DefineConstants>$(DefineConstants);$(GameVersion)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- MTEUtils (submodule) から、ギアメニューと GUIView のウィンドウ一式だけをリンクする。
+         MTEUtils は利用側が明示列挙する前提のため glob にしない。依存が増えたら CS0246 の型のファイルを足す -->
+    <Compile Include="..\..\MTEUtils\GearMenu.cs" Link="MTEUtils\GearMenu.cs" />
+    <Compile Include="..\..\MTEUtils\ColorExtensions.cs" Link="MTEUtils\ColorExtensions.cs" />
+    <Compile Include="..\..\MTEUtils\ColorPickerWindow.cs" Link="MTEUtils\ColorPickerWindow.cs" />
+    <Compile Include="..\..\MTEUtils\ComboBoxPopupWindow.cs" Link="MTEUtils\ComboBoxPopupWindow.cs" />
+    <Compile Include="..\..\MTEUtils\CurveData.cs" Link="MTEUtils\CurveData.cs" />
+    <Compile Include="..\..\MTEUtils\CurveEditorWindow.cs" Link="MTEUtils\CurveEditorWindow.cs" />
+    <Compile Include="..\..\MTEUtils\DialogPopupWindow.cs" Link="MTEUtils\DialogPopupWindow.cs" />
+    <Compile Include="..\..\MTEUtils\DockableWindowBase.cs" Link="MTEUtils\DockableWindowBase.cs" />
+    <Compile Include="..\..\MTEUtils\DockingClient.cs" Link="MTEUtils\DockingClient.cs" />
+    <Compile Include="..\..\MTEUtils\Extensions.cs" Link="MTEUtils\Extensions.cs" />
+    <Compile Include="..\..\MTEUtils\GUICache.cs" Link="MTEUtils\GUICache.cs" />
+    <Compile Include="..\..\MTEUtils\GUIComboBox.cs" Link="MTEUtils\GUIComboBox.cs" />
+    <Compile Include="..\..\MTEUtils\GUIScale.cs" Link="MTEUtils\GUIScale.cs" />
+    <Compile Include="..\..\MTEUtils\GUIView.cs" Link="MTEUtils\GUIView.cs" />
+    <Compile Include="..\..\MTEUtils\IGUIWindow.cs" Link="MTEUtils\IGUIWindow.cs" />
+    <Compile Include="..\..\MTEUtils\IScreenScalableWindow.cs" Link="MTEUtils\IScreenScalableWindow.cs" />
+    <Compile Include="..\..\MTEUtils\ITabVisibleWindow.cs" Link="MTEUtils\ITabVisibleWindow.cs" />
+    <Compile Include="..\..\MTEUtils\InputRemapperClient.cs" Link="MTEUtils\InputRemapperClient.cs" />
+    <Compile Include="..\..\MTEUtils\MTEUtils.cs" Link="MTEUtils\MTEUtils.cs" />
+    <Compile Include="..\..\MTEUtils\MainThreadDispatcher.cs" Link="MTEUtils\MainThreadDispatcher.cs" />
+    <Compile Include="..\..\MTEUtils\ManagerRegistry.cs" Link="MTEUtils\ManagerRegistry.cs" />
+    <Compile Include="..\..\MTEUtils\ResizeCursor.cs" Link="MTEUtils\ResizeCursor.cs" />
+    <Compile Include="..\..\MTEUtils\TabBarDrawer.cs" Link="MTEUtils\TabBarDrawer.cs" />
+    <Compile Include="..\..\MTEUtils\TabBarLayout.cs" Link="MTEUtils\TabBarLayout.cs" />
+    <Compile Include="..\..\MTEUtils\TooltipDrawer.cs" Link="MTEUtils\TooltipDrawer.cs" />
+    <Compile Include="..\..\MTEUtils\TransformCache.cs" Link="MTEUtils\TransformCache.cs" />
+    <Compile Include="..\..\MTEUtils\WindowManagerBase.cs" Link="MTEUtils\WindowManagerBase.cs" />
+    <Compile Include="..\..\MTEUtils\WindowResizeController.cs" Link="MTEUtils\WindowResizeController.cs" />
+    <EmbeddedResource Include="$(ShaderBundle)" LogicalName="mtoon_bundle" Condition="Exists('$(ShaderBundle)')" />
+    <EmbeddedResource Include="Resources\gear_icon.png" LogicalName="gear_icon.png" />
+    <InternalsVisibleTo Include="COM3D2.MToonMaid.Plugin.Tests" />
+  </ItemGroup>
+  <!-- 配布物にシェーダーが無いと実行時に何もできないため、Release ではバンドル欠落をビルドエラーにする -->
+  <Target Name="CheckShaderBundle" BeforeTargets="BeforeBuild" Condition=" '$(Configuration)' == 'Release' And !Exists('$(ShaderBundle)') ">
+    <Error Text="$(ShaderBundle) がありません。build-bundle.bat を実行してください" />
+  </Target>
+  <Target Name="CheckGameDir" BeforeTargets="BeforeBuild" Condition=" '$(GameDir)' == '' ">
+    <Error Text="$(GameVersion) のゲームのインストール先が指定されていません。.env に COM3D2_DIR を設定し、build.bat からビルドしてください" />
+  </Target>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp"><HintPath>$(Managed)\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="Assembly-CSharp-firstpass"><HintPath>$(Managed)\Assembly-CSharp-firstpass.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine"><HintPath>$(Managed)\UnityEngine.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="BepInEx"><HintPath>$(GameDir)\BepInEx\core\BepInEx.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <!-- Unity 2022 の UnityEngine はモジュールに分かれている (5.6 は UnityEngine.dll 1 つ) -->
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
+    <Reference Include="UnityEngine.CoreModule"><HintPath>$(Managed)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(Managed)\UnityEngine.IMGUIModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.AssetBundleModule"><HintPath>$(Managed)\UnityEngine.AssetBundleModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.ImageConversionModule"><HintPath>$(Managed)\UnityEngine.ImageConversionModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.InputLegacyModule"><HintPath>$(Managed)\UnityEngine.InputLegacyModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.TextRenderingModule"><HintPath>$(Managed)\UnityEngine.TextRenderingModule.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="UnityEngine.AnimationModule"><HintPath>$(Managed)\UnityEngine.AnimationModule.dll</HintPath><Private>false</Private></Reference>
+  </ItemGroup>
+  <!-- Developer Pack の無い net35 を SDK 形式でビルドするための参照アセンブリ -->
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+</Project>
