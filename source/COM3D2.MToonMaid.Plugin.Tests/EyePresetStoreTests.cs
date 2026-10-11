@@ -54,10 +54,12 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             var preset = CreatePreset();
             preset.eye.scleraShadowEnabled = true;
             preset.eye.scleraShadowBend = 0.6f;
+            preset.eye.colorEnabled = true;
             Assert.True(store.Save("青い瞳", preset));
             var loaded = store.Load("青い瞳");
 
             Assert.NotNull(loaded);
+            Assert.True(loaded.eye.colorEnabled);
             Assert.Equal(0.2f, loaded.eye.upperShadow);
             Assert.True(loaded.eye.scleraShadowEnabled);
             Assert.Equal(0.6f, loaded.eye.scleraShadowBend);
@@ -127,6 +129,18 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.Equal(1f, wide.eye.upperShadow);
             Assert.NotNull(wide.eye.highlights);
             Assert.Equal(EyeColorValues.MaxBrightness, wide.color.left.mainBrightness);
+        }
+
+        [Fact]
+        public void 瞳の色の変更の要素の無いプリセットはOFF()
+        {
+            Directory.CreateDirectory(_dir);
+            File.WriteAllText(Path.Combine(_dir, "old.xml"),
+                "<?xml version=\"1.0\"?><MToonMaidEyePreset version=\"1\"><eye /></MToonMaidEyePreset>");
+            var store = new PresetStore<EyePreset>(_dir, "瞳のプリセット", _warnings.Add);
+
+            Assert.False(store.Load("old").eye.colorEnabled);
+            Assert.Empty(_warnings);
         }
 
         [Fact]

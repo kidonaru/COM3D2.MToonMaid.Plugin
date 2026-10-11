@@ -685,18 +685,27 @@ namespace COM3D2.MToonMaid.Plugin
             }
             // 右へ切り替える処理 (ResolveAndStoreSide) より前に取る。後だと控えの左右の選択が右になる
             var baseline = _eyeColorBaselines.GetOrCapture(maid.status.guid, () => MaidEyeColor.ReadSnapshot(maid));
+            var eye = _settings.eye;
+            var editable = eye.colorEnabled;
             if (!pending)
             {
                 _eyeColorMaid = maid;
-                _eyeColorSide = MaidEyeColor.ResolveAndStoreSide(maid);
+                // OFF でも右への切り替えを保存すると、表示しただけでエディットの左右の選択が変わる
+                _eyeColorSide = editable
+                    ? MaidEyeColor.ResolveAndStoreSide(maid)
+                    : EyeColorSides.ResolveSide(MaidEyeColor.GetSide(maid),
+                        MaidEyeColor.Read(maid, EyeColorSide.Left), MaidEyeColor.Read(maid, EyeColorSide.Right));
                 _eyeColorValues = MaidEyeColor.Read(maid, _eyeColorSide);
             }
-            view.SetEnabled(_baseEnabled);
+            EyeToggle(view, "瞳の色を変更する", "下の値でゲームの瞳の色を変える\nプリセットにも保存し、ON で保存した瞳のプリセットだけが適用で色も変える\nOFF では瞳の色に触らない",
+                eye.colorEnabled, v => eye.colorEnabled = v, true);
+            view.SetEnabled(_baseEnabled && editable);
             view.BeginHorizontal();
             view.DrawLabel("変える目", LabelWidth, RowHeight,
                 tooltip: "色を変える目\n左右は両目を同じ色にし、左・右はその目だけを変える\n左右へ切り替えると左の色を右へ写す (右の色は失われる)");
             var selected = view.DrawTabs((IList<string>)EyeColorSideLabels, (int)_eyeColorSide, ChoiceWidth, RowHeight);
             view.EndLayout();
+            view.SetEnabled(_baseEnabled);
             if (selected != (int)_eyeColorSide)
             {
                 _eyeColorSide = (EyeColorSide)selected;
@@ -717,23 +726,25 @@ namespace COM3D2.MToonMaid.Plugin
             EyePartsColorRow(view, EyeMainColorKey, "瞳の色 (ゲームのパーツカラー)\nテクスチャの中間の明るさの部分に出る色で選ぶ",
                 _eyeMainPicked, _eyeColorValues.mainHue, _eyeColorValues.mainChroma, _eyeColorValues.mainBrightness,
                 b.mainHue, b.mainChroma, b.mainBrightness,
-                (h, s, v) => { _eyeColorValues.mainHue = h; _eyeColorValues.mainChroma = s; _eyeColorValues.mainBrightness = v; });
+                (h, s, v) => { _eyeColorValues.mainHue = h; _eyeColorValues.mainChroma = s; _eyeColorValues.mainBrightness = v; }, editable);
             EyeColorSlider(view, "コントラスト", "瞳の色の明暗の差 (ゲームのパーツカラー)",
-                _eyeColorValues.mainContrast, EyeColorValues.MaxContrast, b.mainContrast, v => _eyeColorValues.mainContrast = v);
+                _eyeColorValues.mainContrast, EyeColorValues.MaxContrast, b.mainContrast, v => _eyeColorValues.mainContrast = v, editable);
             DrawSection(view, "影");
             EyeColorSlider(view, "割合", "瞳の影の色を混ぜる割合 (ゲームのパーツカラー)",
-                _eyeColorValues.shadowRate, EyeColorValues.MaxShadowRate, b.shadowRate, v => _eyeColorValues.shadowRate = v);
+                _eyeColorValues.shadowRate, EyeColorValues.MaxShadowRate, b.shadowRate, v => _eyeColorValues.shadowRate = v, editable);
             EyePartsColorRow(view, EyeShadowColorKey, "瞳の影の色 (ゲームのパーツカラー)\nテクスチャの中間の明るさの部分に出る色で選ぶ",
                 _eyeShadowPicked, _eyeColorValues.shadowHue, _eyeColorValues.shadowChroma, _eyeColorValues.shadowBrightness,
                 b.shadowHue, b.shadowChroma, b.shadowBrightness,
-                (h, s, v) => { _eyeColorValues.shadowHue = h; _eyeColorValues.shadowChroma = s; _eyeColorValues.shadowBrightness = v; });
+                (h, s, v) => { _eyeColorValues.shadowHue = h; _eyeColorValues.shadowChroma = s; _eyeColorValues.shadowBrightness = v; }, editable);
             EyeColorSlider(view, "コントラスト", "瞳の影の色の明暗の差 (ゲームのパーツカラー)",
-                _eyeColorValues.shadowContrast, EyeColorValues.MaxContrast, b.shadowContrast, v => _eyeColorValues.shadowContrast = v);
+                _eyeColorValues.shadowContrast, EyeColorValues.MaxContrast, b.shadowContrast, v => _eyeColorValues.shadowContrast = v, editable);
 
+            view.SetEnabled(_baseEnabled && editable);
             if (view.DrawButton("瞳の色を編集前に戻す", ResetButtonWidth, RowHeight))
             {
                 RequestEyeColorRestore(baseline);
             }
+            view.SetEnabled(_baseEnabled);
         }
 
         /// <summary>FlushEyeColor は戻す書き込みを他の書き込みより優先する</summary>
@@ -765,9 +776,10 @@ namespace COM3D2.MToonMaid.Plugin
         /// 整数のスライダー。R は編集前の値へ戻す。
         /// 値はゲームのセーブに入るだけなので、_eyeChanged (プラグインの設定の保存) は立てない
         /// </summary>
-        private void EyeColorSlider(GUIView view, string label, string tooltip, int value, int max, int defaultValue, Action<int> set)
+        private void EyeColorSlider(GUIView view, string label, string tooltip, int value, int max, int defaultValue, Action<int> set,
+            bool editable)
         {
-            view.SetEnabled(_baseEnabled);
+            view.SetEnabled(_baseEnabled && editable);
             view.DrawSliderValue(new GUIView.SliderOption
             {
                 label = label,
@@ -790,11 +802,11 @@ namespace COM3D2.MToonMaid.Plugin
 
         /// <summary>パーツカラーの色相・彩度・明度を、瞳のテクスチャの明るさ 128 の位置に出る色 1 つで編集する。R は編集前の値へ戻す</summary>
         private void EyePartsColorRow(GUIView view, string colorKey, string tooltip, EyePickedColor picked, int hue, int chroma, int brightness,
-            int defaultHue, int defaultChroma, int defaultBrightness, Action<int, int, int> set)
+            int defaultHue, int defaultChroma, int defaultBrightness, Action<int, int, int> set, bool editable)
         {
             var shown = ToColor(picked.Shown(hue, chroma, brightness));
             var reset = ToColor(EyeColorHsl.ToColor(defaultHue, defaultChroma, defaultBrightness));
-            view.SetEnabled(_baseEnabled);
+            view.SetEnabled(_baseEnabled && editable);
             view.DrawColor(view.GetColorFieldCache(colorKey, false), shown, reset, c =>
             {
                 if (c == reset)
@@ -821,9 +833,11 @@ namespace COM3D2.MToonMaid.Plugin
                 // ON/OFF は調整値ではないため残す
                 var enabled = _settings.eye.enabled;
                 var scleraEnabled = _settings.eye.scleraShadowEnabled;
+                var colorEnabled = _settings.eye.colorEnabled;
                 _settings.eye = EyeSettings.CreateDefault();
                 _settings.eye.enabled = enabled;
                 _settings.eye.scleraShadowEnabled = scleraEnabled;
+                _settings.eye.colorEnabled = colorEnabled;
                 _highlightIndex = 0;
                 _eyeChanged = true;
             }
@@ -987,10 +1001,13 @@ namespace COM3D2.MToonMaid.Plugin
             _settings.eye = preset.eye;
             _highlightIndex = 0;
             _eyeChanged = true;
-            // [瞳の色] を開く前に適用すると、控えが適用後の色になり [瞳の色を編集前に戻す] で戻れない
-            _eyeColorBaselines.GetOrCapture(maid.status.guid, () => MaidEyeColor.ReadSnapshot(maid));
-            _eyeColorMaid = maid;
-            RequestEyeColorRestore(preset.color);
+            if (preset.eye.colorEnabled)
+            {
+                // [瞳の色] を開く前に適用すると、控えが適用後の色になり [瞳の色を編集前に戻す] で戻れない
+                _eyeColorBaselines.GetOrCapture(maid.status.guid, () => MaidEyeColor.ReadSnapshot(maid));
+                _eyeColorMaid = maid;
+                RequestEyeColorRestore(preset.color);
+            }
             return true;
         }
 

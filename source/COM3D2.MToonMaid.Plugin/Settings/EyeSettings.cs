@@ -42,6 +42,8 @@ namespace COM3D2.MToonMaid.Plugin
 
         public bool enabled = true;
         public bool hideEyeHighlight;
+        /// <summary>ON のときだけゲームの瞳のパーツカラーを書く。瞳のプリセットの適用で色を変えるかはプリセット側のこの値で決まる。OFF ならゲームの値のまま触らない</summary>
+        public bool colorEnabled;
         /// <summary>瞳に主光源・環境光・追加ライトの明るさを掛ける割合。0 はライトに関係なくテクスチャの色のまま</summary>
         public float irisLightInfluence = 0.85f;
 
