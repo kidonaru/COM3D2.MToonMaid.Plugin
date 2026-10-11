@@ -99,7 +99,7 @@ namespace COM3D2.MToonMaid.Plugin
             }
             if (scleraColor == null)
             {
-                scleraColor = new ColorData(1f, 1f, 1f, 1f);
+                scleraColor = new ColorData(0xD1 / 255f, 0xD4 / 255f, 0xE9 / 255f, 1f);
             }
             if (scleraShadowColor == null)
             {

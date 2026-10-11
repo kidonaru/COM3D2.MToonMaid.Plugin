@@ -241,8 +241,9 @@ namespace COM3D2.MToonMaid.Plugin.Tests
 
             Assert.False(s.eye.scleraShadowEnabled);
             Assert.False(s.eye.scleraColorOverride);
-            Assert.Equal(1f, s.eye.scleraColor.r);
-            Assert.Equal(1f, s.eye.scleraColor.b);
+            Assert.Equal(0xD1 / 255f, s.eye.scleraColor.r, 5);
+            Assert.Equal(0xD4 / 255f, s.eye.scleraColor.g, 5);
+            Assert.Equal(0xE9 / 255f, s.eye.scleraColor.b, 5);
             Assert.Equal(1f, s.eye.scleraShadow);
             Assert.Equal(0xE0 / 255f, s.eye.scleraShadowColor.r, 5);
             Assert.Equal(0xD3 / 255f, s.eye.scleraShadowColor.g, 5);
