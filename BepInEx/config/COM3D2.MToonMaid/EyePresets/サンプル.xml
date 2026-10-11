@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<MToonMaidEyePreset xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1">
+  <eye>
+    <enabled>true</enabled>
+    <hideEyeHighlight>false</hideEyeHighlight>
+    <irisLightInfluence>0.85</irisLightInfluence>
+    <upperShadow>0.73</upperShadow>
+    <upperShadowColor r="0.203921571" g="0.423529416" b="0.8745098" a="1" />
+    <upperShadowHeight>0.5</upperShadowHeight>
+    <upperShadowSoftness>0.6</upperShadowSoftness>
+    <lowerGlow>0.28</lowerGlow>
+    <lowerGlowColor r="1" g="0.7254902" b="0.215686277" a="1" />
+    <lowerGlowHeight>0.5</lowerGlowHeight>
+    <lowerGlowSoftness>0.7</lowerGlowSoftness>
+    <highlights>
+      <EyeHighlightSettings>
+        <strength>0.7</strength>
+        <x>0.1</x>
+        <y>-0.27</y>
+        <width>0.1</width>
+        <height>0.1</height>
+        <roll>0</roll>
+        <color r="0.9254902" g="0.796078444" b="0.180392161" a="1" />
+        <glowColor r="0.627451" g="0.7058824" b="1" a="1" />
+        <glowStrength>0</glowStrength>
+        <glowWidth>0.05</glowWidth>
+        <glowHeight>0.05</glowHeight>
+      </EyeHighlightSettings>
+      <EyeHighlightSettings>
+        <strength>1</strength>
+        <x>-0.418</x>
+        <y>-0.35800007</y>
+        <width>0.1</width>
+        <height>0.1</height>
+        <roll>0</roll>
+        <color r="1" g="1" b="1" a="1" />
+        <glowColor r="1" g="1" b="1" a="1" />
+        <glowStrength>1</glowStrength>
+        <glowWidth>0.02</glowWidth>
+        <glowHeight>0.02</glowHeight>
+      </EyeHighlightSettings>
+    </highlights>
+    <parallax>-0.1</parallax>
+    <lidFollow>0.4</lidFollow>
+    <lidCenter>-0.15</lidCenter>
+    <highlightLightInfluence>0.5</highlightLightInfluence>
+    <scleraShadowEnabled>true</scleraShadowEnabled>
+    <scleraColorOverride>false</scleraColorOverride>
+    <scleraColor r="1" g="1" b="1" a="1" />
+    <scleraShadow>1</scleraShadow>
+    <scleraShadowColor r="0.819607854" g="0.831372559" b="0.9137255" a="1" />
+    <scleraShadowHeight>0.3957529</scleraShadowHeight>
+    <scleraShadowSoftness>0.15</scleraShadowSoftness>
+    <scleraShadowBend>0.2</scleraShadowBend>
+    <scleraLidFollow>0.2</scleraLidFollow>
+  </eye>
+  <color>
+    <left>
+      <mainHue>8</mainHue>
+      <mainChroma>67</mainChroma>
+      <mainBrightness>266</mainBrightness>
+      <mainContrast>60</mainContrast>
+      <shadowRate>120</shadowRate>
+      <shadowHue>155</shadowHue>
+      <shadowChroma>131</shadowChroma>
+      <shadowBrightness>67</shadowBrightness>
+      <shadowContrast>0</shadowContrast>
+    </left>
+    <right>
+      <mainHue>8</mainHue>
+      <mainChroma>67</mainChroma>
+      <mainBrightness>266</mainBrightness>
+      <mainContrast>60</mainContrast>
+      <shadowRate>120</shadowRate>
+      <shadowHue>155</shadowHue>
+      <shadowChroma>131</shadowChroma>
+      <shadowBrightness>67</shadowBrightness>
+      <shadowContrast>0</shadowContrast>
+    </right>
+    <side>Both</side>
+  </color>
+</MToonMaidEyePreset>

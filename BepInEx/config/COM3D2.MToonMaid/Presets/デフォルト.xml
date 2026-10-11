@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<MToonMaidPreset xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1">
+  <common>
+    <shadeColor r="1" g="1" b="1" a="1" />
+    <shadeStrength>1.5</shadeStrength>
+    <useGameShadowRate>true</useGameShadowRate>
+    <shadingShift>0</shadingShift>
+    <shadingToony>0.95</shadingToony>
+    <giEqualization>0.9</giEqualization>
+    <additionalLightShade>1</additionalLightShade>
+    <hairShadow>1</hairShadow>
+    <hairShadowMode>Fixed</hairShadowMode>
+    <hairShadowOffsetX>0.002</hairShadowOffsetX>
+    <hairShadowOffsetY>0</hairShadowOffsetY>
+    <hairShadowResolution>2048</hairShadowResolution>
+    <hairShadowSoftness>1</hairShadowSoftness>
+    <receiveShadows>false</receiveShadows>
+    <castShadows>true</castShadows>
+    <highlightScale>1</highlightScale>
+    <rimColorOverride>false</rimColorOverride>
+    <rimColor r="0" g="0" b="0" a="1" />
+    <rimFresnelPowerScale>1</rimFresnelPowerScale>
+    <rimLiftOffset>0</rimLiftOffset>
+    <rimLightingMix>1</rimLightingMix>
+    <outlineEnabled>true</outlineEnabled>
+    <outlineWidth>0.0008</outlineWidth>
+    <outlineNearDistance>0.7</outlineNearDistance>
+    <outlineLightingMix>0.5</outlineLightingMix>
+    <outlineColorOverride>false</outlineColorOverride>
+    <outlineColor r="0" g="0" b="0" a="1" />
+    <overrides />
+  </common>
+  <skin>
+    <shadeColor r="1" g="1" b="1" a="1" />
+    <shadeStrength>1</shadeStrength>
+    <useGameShadowRate>true</useGameShadowRate>
+    <shadingShift>-0.05</shadingShift>
+    <shadingToony>0.8034188</shadingToony>
+    <giEqualization>0.9</giEqualization>
+    <additionalLightShade>0.5</additionalLightShade>
+    <hairShadow>0</hairShadow>
+    <hairShadowMode>Fixed</hairShadowMode>
+    <hairShadowOffsetX>0.01</hairShadowOffsetX>
+    <hairShadowOffsetY>0</hairShadowOffsetY>
+    <hairShadowResolution>512</hairShadowResolution>
+    <hairShadowSoftness>1</hairShadowSoftness>
+    <receiveShadows>true</receiveShadows>
+    <castShadows>false</castShadows>
+    <highlightScale>1</highlightScale>
+    <rimColorOverride>false</rimColorOverride>
+    <rimColor r="0" g="0" b="0" a="1" />
+    <rimFresnelPowerScale>1</rimFresnelPowerScale>
+    <rimLiftOffset>0</rimLiftOffset>
+    <rimLightingMix>1</rimLightingMix>
+    <outlineEnabled>true</outlineEnabled>
+    <outlineWidth>0.0015</outlineWidth>
+    <outlineNearDistance>0.71</outlineNearDistance>
+    <outlineLightingMix>1</outlineLightingMix>
+    <outlineColorOverride>false</outlineColorOverride>
+    <outlineColor r="0" g="0" b="0" a="1" />
+    <overrides />
+  </skin>
+  <face>
+    <shadeColor r="1" g="1" b="1" a="1" />
+    <shadeStrength>1</shadeStrength>
+    <useGameShadowRate>true</useGameShadowRate>
+    <shadingShift>-0.470085472</shadingShift>
+    <shadingToony>0.95</shadingToony>
+    <giEqualization>0.9</giEqualization>
+    <additionalLightShade>0.5</additionalLightShade>
+    <hairShadow>1</hairShadow>
+    <hairShadowMode>Fixed</hairShadowMode>
+    <hairShadowOffsetX>0.004</hairShadowOffsetX>
+    <hairShadowOffsetY>0</hairShadowOffsetY>
+    <hairShadowResolution>512</hairShadowResolution>
+    <hairShadowSoftness>1</hairShadowSoftness>
+    <receiveShadows>false</receiveShadows>
+    <castShadows>true</castShadows>
+    <highlightScale>1</highlightScale>
+    <rimColorOverride>false</rimColorOverride>
+    <rimColor r="0" g="0" b="0" a="1" />
+    <rimFresnelPowerScale>1</rimFresnelPowerScale>
+    <rimLiftOffset>0</rimLiftOffset>
+    <rimLightingMix>1</rimLightingMix>
+    <outlineEnabled>true</outlineEnabled>
+    <outlineWidth>0.000697530864</outlineWidth>
+    <outlineNearDistance>0.71</outlineNearDistance>
+    <outlineLightingMix>1</outlineLightingMix>
+    <outlineColorOverride>false</outlineColorOverride>
+    <outlineColor r="0" g="0" b="0" a="1" />
+    <overrides>
+      <string>hairShadowOffsetX</string>
+    </overrides>
+  </face>
+  <hair>
+    <shadeColor r="1" g="1" b="1" a="1" />
+    <shadeStrength>1</shadeStrength>
+    <useGameShadowRate>true</useGameShadowRate>
+    <shadingShift>-0.05</shadingShift>
+    <shadingToony>0.95</shadingToony>
+    <giEqualization>0.9</giEqualization>
+    <additionalLightShade>1</additionalLightShade>
+    <hairShadow>0</hairShadow>
+    <hairShadowMode>Fixed</hairShadowMode>
+    <hairShadowOffsetX>0.01</hairShadowOffsetX>
+    <hairShadowOffsetY>0</hairShadowOffsetY>
+    <hairShadowResolution>512</hairShadowResolution>
+    <hairShadowSoftness>1</hairShadowSoftness>
+    <receiveShadows>true</receiveShadows>
+    <castShadows>false</castShadows>
+    <highlightScale>1</highlightScale>
+    <rimColorOverride>true</rimColorOverride>
+    <rimColor r="0.274999976" g="0.274999976" b="0.274999976" a="1" />
+    <rimFresnelPowerScale>1</rimFresnelPowerScale>
+    <rimLiftOffset>0</rimLiftOffset>
+    <rimLightingMix>1</rimLightingMix>
+    <outlineEnabled>true</outlineEnabled>
+    <outlineWidth>0.0015</outlineWidth>
+    <outlineNearDistance>0.71</outlineNearDistance>
+    <outlineLightingMix>1</outlineLightingMix>
+    <outlineColorOverride>false</outlineColorOverride>
+    <outlineColor r="0" g="0" b="0" a="1" />
+    <overrides />
+  </hair>
+  <costume>
+    <shadeColor r="1" g="1" b="1" a="1" />
+    <shadeStrength>1</shadeStrength>
+    <useGameShadowRate>true</useGameShadowRate>
+    <shadingShift>-0.05</shadingShift>
+    <shadingToony>0.95</shadingToony>
+    <giEqualization>0.9</giEqualization>
+    <additionalLightShade>0.5</additionalLightShade>
+    <hairShadow>0</hairShadow>
+    <hairShadowMode>Fixed</hairShadowMode>
+    <hairShadowOffsetX>0.01</hairShadowOffsetX>
+    <hairShadowOffsetY>0</hairShadowOffsetY>
+    <hairShadowResolution>512</hairShadowResolution>
+    <hairShadowSoftness>1</hairShadowSoftness>
+    <receiveShadows>true</receiveShadows>
+    <castShadows>false</castShadows>
+    <highlightScale>1</highlightScale>
+    <rimColorOverride>false</rimColorOverride>
+    <rimColor r="0" g="0" b="0" a="1" />
+    <rimFresnelPowerScale>1</rimFresnelPowerScale>
+    <rimLiftOffset>0</rimLiftOffset>
+    <rimLightingMix>1</rimLightingMix>
+    <outlineEnabled>true</outlineEnabled>
+    <outlineWidth>0.0005614887</outlineWidth>
+    <outlineNearDistance>0.71</outlineNearDistance>
+    <outlineLightingMix>1</outlineLightingMix>
+    <outlineColorOverride>false</outlineColorOverride>
+    <outlineColor r="0" g="0" b="0" a="1" />
+    <overrides />
+  </costume>
+</MToonMaidPreset>

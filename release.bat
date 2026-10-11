@@ -34,6 +34,13 @@ if %ERRORLEVEL% neq 0 (
     echo COM3D2 版の dll のコピーに失敗しました
     exit /b 1
 )
+for %%G in (COM3D2.5 COM3D2) do (
+    xcopy /e /i /y /q "BepInEx\config" "output\%PLUGIN_NAME%\%%G\BepInEx\config\" >nul
+    if errorlevel 1 (
+        echo %%G 版のプリセットのコピーに失敗しました
+        exit /b 1
+    )
+)
 copy /y "LICENSE-UniVRM.txt" "output\%PLUGIN_NAME%\" >nul
 
 set README_TXT=output\%PLUGIN_NAME%\README.txt
