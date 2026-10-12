@@ -68,7 +68,6 @@ zip を解凍し、ゲームに合わせて次のフォルダの中身を、ゲ�
 動作環境:
 - COM3D2.5 + BepInEx 5 + UnityInjectorLoader（UnityInjector プラグインが動く環境）
 - COM3D2 (2.0) + BepInEx 5 + UnityInjectorLoader
-- グラフィックス API は DirectX 11（COM3D2 (2.0) で DirectX 9・OpenGL を使っている場合は動作しません）
 
 
 ## 起動方法
