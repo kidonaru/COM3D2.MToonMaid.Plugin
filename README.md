@@ -48,17 +48,17 @@ v1.0.0.0
 [Releases](https://github.com/kidonaru/COM3D2.MToonMaid.Plugin/releases)
 から最新の`COM3D2.MToonMaid.Plugin-vX.X.X.X.zip`をダウンロードします。
 
-zip を解凍し、ゲームに合わせて次のフォルダの中身を、ゲームのインストールフォルダの`BepInEx`フォルダへ上書きコピーしてください。
+zip を解凍し、ゲームに合わせて次のフォルダの中身を、ゲームのインストールフォルダの`Sybaris\UnityInjector`フォルダへ上書きコピーしてください。
 
-- COM3D2.5: `BepInEx (COM3D2.5)`フォルダ (zip 直下の`BepInEx`フォルダは 2.0 用なので使いません)
-- COM3D2 (2.0): `BepInEx`フォルダ
+- COM3D2.5: `UnityInjector (COM3D2.5)`フォルダ (zip 直下の`UnityInjector`フォルダは 2.0 用なので使いません)
+- COM3D2 (2.0): `UnityInjector`フォルダ
 
 各ファイルの説明:
-- `BepInEx (COM3D2.5)/plugins/COM3D2.MToonMaid.dll`
+- `UnityInjector (COM3D2.5)/COM3D2.MToonMaid.Plugin.dll`
   - COM3D2.5 用のプラグインの本体。シェーダーも dll に含まれています
-- `BepInEx/plugins/COM3D2.MToonMaid.dll`
+- `UnityInjector/COM3D2.MToonMaid.Plugin.dll`
   - COM3D2 (2.0) 用のプラグインの本体。シェーダーも dll に含まれています
-- `BepInEx (COM3D2.5)/config/COM3D2.MToonMaid/`、`BepInEx/config/COM3D2.MToonMaid/`
+- `UnityInjector (COM3D2.5)/Config/MToonMaid/`、`UnityInjector/Config/MToonMaid/`
   - 同梱のプリセット (中身はどちらも同じです)
 - `LICENSE-UniVRM.txt`
   - 改変元の UniVRM のライセンス
@@ -66,15 +66,15 @@ zip を解凍し、ゲームに合わせて次のフォルダの中身を、ゲ�
   - この説明書
 
 動作環境:
-- COM3D2.5 + BepInEx 5
-- COM3D2 (2.0) + BepInEx 5（5.4.23 より古い BepInEx では「targets a wrong version of BepInEx」の警告がログに出ますが、動作します）
+- COM3D2.5 + BepInEx 5 + UnityInjectorLoader（UnityInjector プラグインが動く環境）
+- COM3D2 (2.0) + BepInEx 5 + UnityInjectorLoader
 - グラフィックス API は DirectX 11（COM3D2 (2.0) で DirectX 9・OpenGL を使っている場合は動作しません）
 
 
 ## 起動方法
 
 ゲーム起動後、ギアメニューの MToonMaid アイコン、または`Ctrl` + `Shift` + `M`キーでウィンドウを開きます。
-（`BepInEx/config/com.kidonaru.com3d2.mtoonmaid.cfg`の`ToggleWindow`でキーを変更できます）
+（`Sybaris/UnityInjector/Config/MToonMaid.xml`の`toggleWindow`でキーを変更できます。例: `Ctrl+Shift+M`、`Alt+F2`）
 
 1. `<` `>`で対象のメイドを選びます
 2. 「MToon にする」にチェックを入れると、そのメイドのシェーダーが置き換わります
@@ -403,17 +403,17 @@ SceneEditor を導入している場合、ウィンドウは SceneEditor のド�
 
 | パス | 内容 |
 |---|---|
-| `BepInEx/config/com.kidonaru.com3d2.mtoonmaid.cfg` | BepInEx の設定（下表） |
-| `BepInEx/config/COM3D2.MToonMaid/` | メイドごとの設定 |
-| `BepInEx/config/COM3D2.MToonMaid/Presets/` | プリセットタブのプリセット（1 個 1 ファイル） |
-| `BepInEx/config/COM3D2.MToonMaid/EyePresets/` | 瞳の [プリセット]（1 個 1 ファイル） |
+| `Sybaris/UnityInjector/Config/MToonMaid.xml` | 全体の設定（下表） |
+| `Sybaris/UnityInjector/Config/MToonMaid/` | メイドごとの設定 |
+| `Sybaris/UnityInjector/Config/MToonMaid/Presets/` | プリセットタブのプリセット（1 個 1 ファイル） |
+| `Sybaris/UnityInjector/Config/MToonMaid/EyePresets/` | 瞳の [プリセット]（1 個 1 ファイル） |
 
-BepInEx の設定:
+全体の設定（ゲームを起動していないときに編集してください）:
 
 | 項目 | 既定 | 効果 |
 |---|---|---|
-| `ToggleWindow` | `Ctrl` + `Shift` + `M` | ウィンドウの開閉キー |
-| `ScanInterval` | 10 | マテリアルを走査する間隔（フレーム）。小さいほど着替え直後の追従が速く、負荷が増える |
+| `toggleWindow` | `Ctrl+Shift+M` | ウィンドウの開閉キー |
+| `scanInterval` | 10 | マテリアルを走査する間隔（フレーム）。小さいほど着替え直後の追従が速く、負荷が増える |
 
 
 ## 制限
@@ -485,7 +485,7 @@ git clone --recursive https://github.com/[自分のユーザー名]/COM3D2.MToon
    - COM3D2 (2.0) 版もビルドする場合は`COM3D2_DIR`も設定します（`release.bat`は両方を作るため必須です）
 
 4. コード修正後、デバッグ用ビルドスクリプトを実行し動作確認
-(自動でゲームの`BepInEx\plugins`内にコピーされます。引数で対象を選べます: `com3d25`（既定）/ `com3d2` / `all`)
+(自動でゲームの`Sybaris\UnityInjector`内にコピーされます。引数で対象を選べます: `com3d25`（既定）/ `com3d2` / `all`)
 ```bash
 .\debug.bat
 .\debug.bat com3d2

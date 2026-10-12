@@ -9,8 +9,8 @@ output/
 .codegraph/
 
 # ビルド成果物。build.bat が毎回生成するため追跡しない
-BepInEx/plugins/*.dll
-BepInEx (COM3D2)/plugins/*.dll
+UnityInjector/*.dll
+UnityInjector (COM3D2.5)/*.dll
 
 # executing-plans の作業領域
 .superpowers/

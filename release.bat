@@ -3,7 +3,7 @@ chcp 65001 >nul
 setlocal
 
 set PLUGIN_NAME=COM3D2.MToonMaid.Plugin
-set ASSEMBLY_NAME=COM3D2.MToonMaid
+set ASSEMBLY_NAME=COM3D2.MToonMaid.Plugin
 
 call .\source\%PLUGIN_NAME%\build.bat release all
 if %ERRORLEVEL% neq 0 (
@@ -21,35 +21,31 @@ echo VERSION: %VERSION%
 if exist output rmdir /s /q output
 
 rem ============ 配布パッケージ ============
-rem zip 直下の BepInEx を 2.5 用にしないのは、PostEffects (UnityInjector = 2.0 用 / UnityInjector (COM3D2.5) = 2.5 用) と対応をそろえるため
-rem リポジトリ内のビルド出力は名前の対応が逆 (BepInEx = 2.5 用) なので、コピー元とコピー先を並べて取り違えを防ぐ
-set SRC_COM3D2=BepInEx (COM3D2)
-set SRC_COM3D25=BepInEx
-set PKG_COM3D2=output\%PLUGIN_NAME%\BepInEx
-set PKG_COM3D25=output\%PLUGIN_NAME%\BepInEx (COM3D2.5)
-md "%PKG_COM3D2%\plugins"
-copy /y "%SRC_COM3D2%\plugins\%ASSEMBLY_NAME%.dll" "%PKG_COM3D2%\plugins\" >nul
+set PKG_COM3D2=output\%PLUGIN_NAME%\UnityInjector
+set PKG_COM3D25=output\%PLUGIN_NAME%\UnityInjector (COM3D2.5)
+md "%PKG_COM3D2%"
+copy /y "UnityInjector\%ASSEMBLY_NAME%.dll" "%PKG_COM3D2%\" >nul
 if %ERRORLEVEL% neq 0 (
     echo COM3D2 版の dll のコピーに失敗しました
     exit /b 1
 )
-md "%PKG_COM3D25%\plugins"
-copy /y "%SRC_COM3D25%\plugins\%ASSEMBLY_NAME%.dll" "%PKG_COM3D25%\plugins\" >nul
+md "%PKG_COM3D25%"
+copy /y "UnityInjector (COM3D2.5)\%ASSEMBLY_NAME%.dll" "%PKG_COM3D25%\" >nul
 if %ERRORLEVEL% neq 0 (
     echo COM3D2.5 版の dll のコピーに失敗しました
     exit /b 1
 )
 for %%D in ("%PKG_COM3D2%" "%PKG_COM3D25%") do (
-    xcopy /e /i /y /q "BepInEx\config" "%%~D\config\" >nul
+    xcopy /e /i /y /q "UnityInjector\Config" "%%~D\Config\" >nul
     if errorlevel 1 (
         echo %%~D へのプリセットのコピーに失敗しました
         exit /b 1
     )
 )
 rem 2 つの dll は同名なので、バイト比較ではフォルダとの取り違え (2.5 版に 2.0 用が入る等) を見分けられない
-call :check_runtime "%PKG_COM3D2%\plugins\%ASSEMBLY_NAME%.dll" v2.
+call :check_runtime "%PKG_COM3D2%\%ASSEMBLY_NAME%.dll" v2.
 if %ERRORLEVEL% neq 0 exit /b 1
-call :check_runtime "%PKG_COM3D25%\plugins\%ASSEMBLY_NAME%.dll" v4.
+call :check_runtime "%PKG_COM3D25%\%ASSEMBLY_NAME%.dll" v4.
 if %ERRORLEVEL% neq 0 exit /b 1
 
 copy /y "LICENSE-UniVRM.txt" "output\%PLUGIN_NAME%\" >nul
