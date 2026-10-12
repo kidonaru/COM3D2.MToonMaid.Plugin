@@ -2,7 +2,7 @@
   <PropertyGroup>
     <!-- net471 = COM3D2.5 (Unity 2022.3)、net35 = COM3D2 (2.0, Unity 5.6)。build.ps1 が -f で片方ずつ作る -->
     <TargetFrameworks>net471;net35</TargetFrameworks>
-    <AssemblyName>COM3D2.MToonMaid</AssemblyName>
+    <AssemblyName>COM3D2.MToonMaid.Plugin</AssemblyName>
     <RootNamespace>COM3D2.MToonMaid.Plugin</RootNamespace>
     <LangVersion>7.3</LangVersion>
     <!-- バージョンの単一ソースは PluginInfo.cs（bump-version.bat が書き換える） -->
@@ -45,6 +45,7 @@
     <Compile Include="..\..\MTEUtils\IScreenScalableWindow.cs" Link="MTEUtils\IScreenScalableWindow.cs" />
     <Compile Include="..\..\MTEUtils\ITabVisibleWindow.cs" Link="MTEUtils\ITabVisibleWindow.cs" />
     <Compile Include="..\..\MTEUtils\InputRemapperClient.cs" Link="MTEUtils\InputRemapperClient.cs" />
+    <Compile Include="..\..\MTEUtils\KeyBind.cs" Link="MTEUtils\KeyBind.cs" />
     <Compile Include="..\..\MTEUtils\MTEUtils.cs" Link="MTEUtils\MTEUtils.cs" />
     <Compile Include="..\..\MTEUtils\MainThreadDispatcher.cs" Link="MTEUtils\MainThreadDispatcher.cs" />
     <Compile Include="..\..\MTEUtils\ManagerRegistry.cs" Link="MTEUtils\ManagerRegistry.cs" />
@@ -70,10 +71,11 @@
     <Reference Include="Assembly-CSharp"><HintPath>$(Managed)\Assembly-CSharp.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="Assembly-CSharp-firstpass"><HintPath>$(Managed)\Assembly-CSharp-firstpass.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine"><HintPath>$(Managed)\UnityEngine.dll</HintPath><Private>false</Private></Reference>
-    <Reference Include="BepInEx"><HintPath>$(GameDir)\BepInEx\core\BepInEx.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
   <!-- Unity 2022 の UnityEngine はモジュールに分かれている (5.6 は UnityEngine.dll 1 つ) -->
   <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
+    <!-- COM3D2.5 には UnityInjector.dll の実体が無く、UnityInjector.PluginBase 等は BepInEx.UnityInjectorLoader.dll にある -->
+    <Reference Include="BepInEx.UnityInjectorLoader"><HintPath>$(GameDir)\BepInEx\plugins\UnityInjectorLoader\BepInEx.UnityInjectorLoader.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.CoreModule"><HintPath>$(Managed)\UnityEngine.CoreModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.IMGUIModule"><HintPath>$(Managed)\UnityEngine.IMGUIModule.dll</HintPath><Private>false</Private></Reference>
     <Reference Include="UnityEngine.AssetBundleModule"><HintPath>$(Managed)\UnityEngine.AssetBundleModule.dll</HintPath><Private>false</Private></Reference>
@@ -85,5 +87,6 @@
   <!-- Developer Pack の無い net35 を SDK 形式でビルドするための参照アセンブリ -->
   <ItemGroup Condition=" '$(TargetFramework)' == 'net35' ">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+    <Reference Include="UnityInjector"><HintPath>$(GameDir)\Sybaris\lib\UnityInjector.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
 </Project>

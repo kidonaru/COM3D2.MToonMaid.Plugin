@@ -1,6 +1,5 @@
 using System.IO;
 using System.Reflection;
-using BepInEx.Logging;
 using UnityEngine;
 
 namespace COM3D2.MToonMaid.Plugin
@@ -22,7 +21,7 @@ namespace COM3D2.MToonMaid.Plugin
         private const string ResourceName = "mtoon_bundle";
 
         /// <summary>MToon を読めない・今のグラフィックス API で描けないときは null。シェーダーは読み込んだまま保持する</summary>
-        public static MToonShaders Load(ManualLogSource log)
+        internal static MToonShaders Load(PluginLogger log)
         {
             byte[] bytes;
             using (var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(ResourceName))

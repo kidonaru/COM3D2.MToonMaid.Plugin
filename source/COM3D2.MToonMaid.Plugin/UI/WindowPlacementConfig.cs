@@ -1,42 +1,38 @@
-using BepInEx.Configuration;
 using UnityEngine;
 
 namespace COM3D2.MToonMaid.Plugin
 {
     /// <summary>
-    /// ウィンドウの位置とサイズを BepInEx の設定へ保存する。
+    /// ウィンドウの位置とサイズを Config\MToonMaid.xml へ保存する。
     /// DockableWindowBase はドラッグ中に毎フレーム StorePlacement を呼ぶため、
-    /// マウスを離してからまとめて書く (設定は値の代入ごとにファイルへ書かれる)
+    /// マウスを離してからまとめて書く
     /// </summary>
     public sealed class WindowPlacementConfig
     {
-        private readonly ConfigFile _config;
-        private readonly ConfigEntry<int> _x;
-        private readonly ConfigEntry<int> _y;
-        private readonly ConfigEntry<int> _width;
-        private readonly ConfigEntry<int> _height;
+        private readonly PluginConfigStore _store;
+        private readonly int _defaultWidth;
+        private readonly int _defaultHeight;
         private int _pendingX;
         private int _pendingY;
         private int _pendingWidth;
         private int _pendingHeight;
         private bool _dirty;
 
-        public WindowPlacementConfig(ConfigFile config, int defaultWidth, int defaultHeight)
+        public WindowPlacementConfig(PluginConfigStore store, int defaultWidth, int defaultHeight)
         {
-            _config = config;
-            // 負の位置は画面中央 (DockableWindowBase.Init の扱い)
-            _x = config.Bind("Window", "X", -1, "ウィンドウの X 座標 (負なら画面中央)");
-            _y = config.Bind("Window", "Y", -1, "ウィンドウの Y 座標 (負なら画面中央)");
-            _width = config.Bind("Window", "Width", defaultWidth, "ウィンドウの幅");
-            _height = config.Bind("Window", "Height", defaultHeight, "ウィンドウの高さ");
+            _store = store;
+            _defaultWidth = defaultWidth;
+            _defaultHeight = defaultHeight;
         }
 
+        /// <summary>負の位置は画面中央 (DockableWindowBase.Init の扱い)</summary>
         public void Load(out int x, out int y, out int width, out int height)
         {
-            x = _x.Value;
-            y = _y.Value;
-            width = _width.Value;
-            height = _height.Value;
+            var config = _store.Config;
+            x = config.windowX;
+            y = config.windowY;
+            width = config.windowWidth > 0 ? config.windowWidth : _defaultWidth;
+            height = config.windowHeight > 0 ? config.windowHeight : _defaultHeight;
         }
 
         public void Store(int x, int y, int width, int height)
@@ -55,14 +51,12 @@ namespace COM3D2.MToonMaid.Plugin
                 return;
             }
             _dirty = false;
-            var saveOnSet = _config.SaveOnConfigSet;
-            _config.SaveOnConfigSet = false;
-            _x.Value = _pendingX;
-            _y.Value = _pendingY;
-            _width.Value = _pendingWidth;
-            _height.Value = _pendingHeight;
-            _config.SaveOnConfigSet = saveOnSet;
-            _config.Save();
+            var config = _store.Config;
+            config.windowX = _pendingX;
+            config.windowY = _pendingY;
+            config.windowWidth = _pendingWidth;
+            config.windowHeight = _pendingHeight;
+            _store.Save();
         }
     }
 }

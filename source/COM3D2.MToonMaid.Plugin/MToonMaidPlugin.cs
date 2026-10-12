@@ -1,23 +1,28 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using BepInEx;
-using BepInEx.Configuration;
-using BepInEx.Logging;
+using COM3D2.MotionTimelineEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityInjector;
+using UnityInjector.Attributes;
 
 namespace COM3D2.MToonMaid.Plugin
 {
-    [BepInPlugin(PluginInfo.PluginGuid, PluginInfo.PluginFullName, PluginInfo.PluginVersion)]
-    public class MToonMaidPlugin : BaseUnityPlugin, IMToonMaidHost
+    [
+        PluginFilter("COM3D2x64"),
+        PluginName(PluginInfo.PluginFullName),
+        PluginVersion(PluginInfo.PluginVersion)
+    ]
+    public class MToonMaidPlugin : PluginBase, IMToonMaidHost
     {
         private const string GearIconResourceName = "gear_icon.png";
 
-        internal static ManualLogSource Log;
+        internal static readonly PluginLogger Log = new PluginLogger(PluginInfo.PluginName);
 
-        private ConfigEntry<int> _scanInterval;
-        private ConfigEntry<KeyboardShortcut> _toggleKey;
+        private PluginConfigStore _config;
+        // 読めない・押すキーが無い設定なら null (キーでは開閉しない)
+        private KeyBind _toggleKey;
         private WindowManager _windowManager;
         private bool _windowInitFailed;
         private GameObject _gearIcon;
@@ -54,8 +59,6 @@ namespace COM3D2.MToonMaid.Plugin
 
         private void Awake()
         {
-            Log = Logger;
-
             // 2.5 版と 2.0 版は DLL 名が同じなので、取り違えて入れると、ゲームの型の違い (goSlot など) で毎フレーム例外になる
             if (!GameCompat.IsExpectedUnityVersion(Application.unityVersion))
             {
@@ -64,13 +67,13 @@ namespace COM3D2.MToonMaid.Plugin
                 return;
             }
 
-            _scanInterval = Config.Bind("General", "ScanInterval", 10,
-                "マテリアルを走査する間隔 (フレーム)。小さいほど着替え直後の追従が速く、負荷が増える");
-            _toggleKey = Config.Bind("General", "ToggleWindow", new KeyboardShortcut(KeyCode.M, KeyCode.LeftControl, KeyCode.LeftShift),
-                "ウィンドウの開閉キー");
+            DontDestroyOnLoad(this);
+            var configRoot = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Config");
+            _config = new PluginConfigStore(Path.Combine(configRoot, PluginInfo.PluginName + ".xml"), Log.LogWarning);
+            _toggleKey = ParseToggleKey(_config.Config.toggleWindow);
             SceneManager.sceneLoaded += OnSceneLoaded;
             Camera.onPreCull += OnCameraPreCull;
-            var configDirectory = Path.Combine(Paths.ConfigPath, "COM3D2.MToonMaid");
+            var configDirectory = Path.Combine(configRoot, PluginInfo.PluginName);
             _store = new MaidSettingsStore(configDirectory, Log.LogWarning);
             // 設定ファイルと同じフォルダに置くと、GUID のファイルと名前のファイルが混ざる
             _eyePresets = new PresetStore<EyePreset>(Path.Combine(configDirectory, "EyePresets"), "瞳のプリセット", Log.LogWarning);
@@ -84,7 +87,7 @@ namespace COM3D2.MToonMaid.Plugin
                 return;
             }
 
-            // Awake (Chainloader 実行中) で AssetBundle からシェーダーを読むと
+            // Awake (プラグインのロード中) で AssetBundle からシェーダーを読むと
             // LoadAllAssets がネイティブでクラッシュするため、最初の Update まで遅らせる
             _shaderLoadPending = true;
         }
@@ -106,7 +109,7 @@ namespace COM3D2.MToonMaid.Plugin
         }
 
         /// <summary>
-        /// GUIView の静的初期化が Texture2D を作り、Awake (Chainloader 実行中) ではネイティブでクラッシュするため、
+        /// GUIView の静的初期化が Texture2D を作り、Awake (プラグインのロード中) ではネイティブでクラッシュするため、
         /// ウィンドウは最初の Update で作る
         /// </summary>
         private bool EnsureWindowManager()
@@ -118,7 +121,7 @@ namespace COM3D2.MToonMaid.Plugin
             try
             {
                 var manager = new WindowManager(this,
-                    new WindowPlacementConfig(Config, MToonMaidWindow.DefaultWidth, MToonMaidWindow.DefaultHeight));
+                    new WindowPlacementConfig(_config, MToonMaidWindow.DefaultWidth, MToonMaidWindow.DefaultHeight));
                 manager.Init();
                 _windowManager = manager;
                 return true;
@@ -136,7 +139,7 @@ namespace COM3D2.MToonMaid.Plugin
         {
             if (EnsureWindowManager())
             {
-                if (_toggleKey.Value.IsDown())
+                if (_toggleKey != null && _toggleKey.GetKeyDown())
                 {
                     ToggleWindow();
                 }
@@ -243,6 +246,23 @@ namespace COM3D2.MToonMaid.Plugin
             window.isShowWnd = !window.isShowWnd;
         }
 
+        /// <summary>空ならキーを使わない設定として null。押すキーが無い (修飾キーだけ・読めない) 文字列も警告して null</summary>
+        private static KeyBind ParseToggleKey(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return null;
+            }
+            var key = new KeyBind(text);
+            // KeyBind.GetKeyDown は keyCode が None だと修飾キーを押している間ずっと true を返し、毎フレーム開閉してしまう
+            if (key.keyCode == KeyCode.None)
+            {
+                Log.LogWarning("toggleWindow のキー \"" + text + "\" を読めないため、キーでは開閉できません (例: Ctrl+Shift+M)");
+                return null;
+            }
+            return key;
+        }
+
         /// <summary>ギアメニューのアイコン。シーン遷移で破棄されるため無ければ作り直す</summary>
         private void EnsureGearIcon()
         {
@@ -322,7 +342,7 @@ namespace COM3D2.MToonMaid.Plugin
                     continue;
                 }
 
-                pair.Value.ScanInterval = Mathf.Max(1, _scanInterval.Value);
+                pair.Value.ScanInterval = Mathf.Max(1, _config.Config.scanInterval);
                 pair.Value.Tick(settings);
             }
             foreach (var maid in _removeBuffer)
