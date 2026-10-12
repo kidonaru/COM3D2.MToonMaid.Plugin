@@ -255,7 +255,8 @@ namespace COM3D2.MToonMaid.Plugin
             }
             var key = new KeyBind(text);
             // KeyBind.GetKeyDown は keyCode が None だと修飾キーを押している間ずっと true を返し、毎フレーム開閉してしまう
-            if (key.keyCode == KeyCode.None)
+            // KeyBind は Enum.Parse で読むため、"999" のような数値も通ってしまい、二度と押せないキーになる
+            if (key.keyCode == KeyCode.None || !System.Enum.IsDefined(typeof(KeyCode), key.keyCode))
             {
                 Log.LogWarning("toggleWindow のキー \"" + text + "\" を読めないため、キーでは開閉できません (例: Ctrl+Shift+M)");
                 return null;

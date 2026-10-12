@@ -2,10 +2,7 @@ using UnityEngine;
 
 namespace COM3D2.MToonMaid.Plugin
 {
-    /// <summary>
-    /// BepInEx の ManualLogSource と同じ名前のメソッドで UnityEngine.Debug へ出す。
-    /// BepInEx の LogOutput.log には Unity Log として残る
-    /// </summary>
+    /// <summary>BepInEx の ManualLogSource と同じ名前のメソッドにして、呼び出し側を変えずに UnityEngine.Debug へ出す</summary>
     internal sealed class PluginLogger
     {
         private readonly string _prefix;

@@ -14,6 +14,8 @@ namespace COM3D2.MToonMaid.Plugin
 
         private readonly string _path;
         private readonly Action<string> _warn;
+        // 壊れたファイルを退避できなかった。保存すると利用者の書いた中身が消えるため、このセッションでは書かない
+        private bool _keepBrokenFile;
 
         public PluginConfig Config { get; }
 
@@ -32,6 +34,10 @@ namespace COM3D2.MToonMaid.Plugin
         /// <summary>失敗しても例外を出さず警告する (保存できないだけでプラグインを止めないため)</summary>
         public void Save()
         {
+            if (_keepBrokenFile)
+            {
+                return;
+            }
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(_path));
@@ -76,7 +82,7 @@ namespace COM3D2.MToonMaid.Plugin
             }
             catch (Exception e)
             {
-                BrokenFileBackup.MoveAside(_path, e, _warn);
+                _keepBrokenFile = !BrokenFileBackup.MoveAside(_path, e, _warn);
                 return null;
             }
         }

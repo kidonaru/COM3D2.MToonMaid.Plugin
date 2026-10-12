@@ -1,9 +1,6 @@
 namespace COM3D2.MToonMaid.Plugin
 {
-    /// <summary>
-    /// メイドによらない全体設定 (Config\MToonMaid.xml)。
-    /// windowWidth / windowHeight の 0 は未設定で、WindowPlacementConfig がウィンドウの既定サイズにする
-    /// </summary>
+    /// <summary>メイドによらない全体設定 (Config\MToonMaid.xml)。windowWidth / windowHeight の 0 は未設定</summary>
     public class PluginConfig
     {
         public int scanInterval = 10;

@@ -92,6 +92,22 @@ namespace COM3D2.MToonMaid.Plugin.Tests
         }
 
         [Fact]
+        public void 退避できなければ壊れたファイルを上書きしない()
+        {
+            Directory.CreateDirectory(_dir);
+            File.WriteAllText(_path, "<PluginConfig><scanInterval>");
+            // 退避先と同名のフォルダを作り、退避を失敗させる
+            Directory.CreateDirectory(_path + ".bak");
+
+            var store = new PluginConfigStore(_path, _warnings.Add);
+            store.Save();
+
+            Assert.Equal(10, store.Config.scanInterval);
+            Assert.Equal("<PluginConfig><scanInterval>", File.ReadAllText(_path));
+            Assert.Single(_warnings);
+        }
+
+        [Fact]
         public void 保存できなくても例外を出さず警告する()
         {
             var store = new PluginConfigStore(_path, _warnings.Add);
