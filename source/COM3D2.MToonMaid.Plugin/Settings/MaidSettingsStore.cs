@@ -110,21 +110,7 @@ namespace COM3D2.MToonMaid.Plugin
                 catch (Exception e)
                 {
                     // 壊れたファイルを次の保存で上書きしないよう退避し、このメイドは OFF で始める
-                    var backup = path + ".bak";
-                    try
-                    {
-                        if (File.Exists(backup))
-                        {
-                            File.Delete(backup);
-                        }
-                        File.Move(path, backup);
-                        warn("設定ファイルを読めないため " + backup + " へ退避しました: " + e.Message);
-                    }
-                    catch (Exception moveError)
-                    {
-                        // 退避できなくても読み込みは失敗させない (毎フレームの例外で全メイドの処理が止まるため)
-                        warn("設定ファイルを読めず、" + backup + " への退避にも失敗しました: " + e.Message + " / " + moveError.Message);
-                    }
+                    BrokenFileBackup.MoveAside(path, e, warn);
                     settings = null;
                 }
             }
