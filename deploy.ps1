@@ -147,16 +147,15 @@ $notes = @"
 ### ダウンロード
 [$zipName]($downloadUrl)
 
-zip を解凍し、お使いのゲームに対応したフォルダの中身を、ゲームのインストールフォルダの ``Sybaris\UnityInjector`` フォルダへ上書きコピーしてください。
+zip を解凍し、お使いのバージョンに対応したフォルダの中身を ``Sybaris\UnityInjector\`` へコピーしてください。
 
 | 対象 | 同梱フォルダ |
 |---|---|
+| **COM3D2** | ``UnityInjector`` |
 | **COM3D2.5** | ``UnityInjector (COM3D2.5)`` |
-| **COM3D2 (2.0)** | ``UnityInjector`` |
 
-COM3D2.5 では zip 直下の ``UnityInjector`` フォルダ (2.0 用) は使いません。
+``Config\MToonMaid`` を入れ忘れると同梱のプリセットが使えません。
 
-2 つの dll は同じ名前で、ゲームに合わない方を入れると動作しません。
 使い方は [README]($readmeUrl) をご覧ください。
 
 ### 変更点
