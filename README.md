@@ -43,6 +43,12 @@ v1.0.0.0
 影色・境界・リム・アウトラインなどを部位ごとに調整でき、ゲームの陰影（影の境界・ランプの色）やリム・線の色を引き継いだまま MToon の表現を足せます。
 
 
+
+https://github.com/user-attachments/assets/b7a9402c-303e-4a39-81e6-d288bc3238b0
+
+
+
+
 ## インストール方法
 
 [Releases](https://github.com/kidonaru/COM3D2.MToonMaid.Plugin/releases)
