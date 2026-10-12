@@ -415,6 +415,8 @@ SceneEditor を導入している場合、ウィンドウは SceneEditor のド�
 | `toggleWindow` | `Ctrl+Shift+M` | ウィンドウの開閉キー |
 | `scanInterval` | 10 | マテリアルを走査する間隔（フレーム）。小さいほど着替え直後の追従が速く、負荷が増える |
 
+エラーや警告は`[MToonMaid]`を付けて、`BepInEx/LogOutput.log`に出ます。そこに無い場合（COM3D2 (2.0) の環境によっては）`COM3D2x64_Data/output_log.txt`に出ます。
+
 
 ## 制限
 

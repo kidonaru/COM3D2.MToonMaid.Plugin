@@ -228,7 +228,7 @@ namespace COM3D2.MToonMaid.Plugin
 
             if (!_host.IsShaderAvailable)
             {
-                view.DrawLabel("シェーダーを読み込めないか、URP が有効なため動作しません。BepInEx のログを確認してください", -1, RowHeight * 3);
+                view.DrawLabel("シェーダーを読み込めないか、URP が有効なため動作しません。ログを確認してください", -1, RowHeight * 3);
                 return;
             }
 
@@ -480,7 +480,7 @@ namespace COM3D2.MToonMaid.Plugin
             DrawSection(view, "前髪の影");
             if (!editable)
             {
-                view.DrawLabel("前髪の影のシェーダーを読めないため使えません (BepInEx のログを確認してください)", -1, RowHeight);
+                view.DrawLabel("前髪の影のシェーダーを読めないため使えません (ログを確認してください)", -1, RowHeight);
             }
             Slider(view, GroupSettingKeys.HairShadow, "強さ", "前髪が顔へ落とす影の濃さ\n0 で影を作らない",
                 shown.hairShadow, 0f, 1f, def.hairShadow, (s, v) => s.hairShadow = v, editable: editable);
@@ -555,7 +555,7 @@ namespace COM3D2.MToonMaid.Plugin
             if (!_host.IsEyeGlossAvailable)
             {
                 // DrawLabel は入力欄キャッシュを使わないため、条件つきで描いても番号はずれない
-                view.DrawLabel("瞳のシェーダーを読めないため、瞳の項目は使えません (BepInEx のログを確認してください)", -1, RowHeight);
+                view.DrawLabel("瞳のシェーダーを読めないため、瞳の項目は使えません (ログを確認してください)", -1, RowHeight);
             }
             if (_eyeSubTab == EyeShadeSubTab)
             {
