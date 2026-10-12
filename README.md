@@ -48,13 +48,18 @@ v1.0.0.0
 [Releases](https://github.com/kidonaru/COM3D2.MToonMaid.Plugin/releases)
 から最新の`COM3D2.MToonMaid.Plugin-vX.X.X.X.zip`をダウンロードします。
 
-zip を解凍し、ゲームに合わせて`COM3D2.5`または`COM3D2`フォルダの中の`BepInEx`フォルダを、ゲームのインストールフォルダへ上書きコピーしてください。
+zip を解凍し、ゲームに合わせて次のフォルダの中身を、ゲームのインストールフォルダの`BepInEx`フォルダへ上書きコピーしてください。
+
+- COM3D2.5: `BepInEx (COM3D2.5)`フォルダ (zip 直下の`BepInEx`フォルダは 2.0 用なので使いません)
+- COM3D2 (2.0): `BepInEx`フォルダ
 
 各ファイルの説明:
-- `COM3D2.5/BepInEx/plugins/COM3D2.MToonMaid.dll`
+- `BepInEx (COM3D2.5)/plugins/COM3D2.MToonMaid.dll`
   - COM3D2.5 用のプラグインの本体。シェーダーも dll に含まれています
-- `COM3D2/BepInEx/plugins/COM3D2.MToonMaid.dll`
+- `BepInEx/plugins/COM3D2.MToonMaid.dll`
   - COM3D2 (2.0) 用のプラグインの本体。シェーダーも dll に含まれています
+- `BepInEx (COM3D2.5)/config/COM3D2.MToonMaid/`、`BepInEx/config/COM3D2.MToonMaid/`
+  - 同梱のプリセット (中身はどちらも同じです)
 - `LICENSE-UniVRM.txt`
   - 改変元の UniVRM のライセンス
 - `README.txt`
