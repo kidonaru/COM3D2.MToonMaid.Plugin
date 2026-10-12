@@ -5,6 +5,7 @@
 .DESCRIPTION
     以下を一括で書き換える。
       - source\COM3D2.MToonMaid.Plugin\PluginInfo.cs の PluginVersion
+      - README.md 冒頭のバージョン表記
       - README.md 変更履歴の見出し（内容は TODO のまま。後から手で書く）
 #>
 param(
@@ -67,6 +68,15 @@ $readme = Read-TextFile $readmePath
 # 既存ファイルの改行に合わせて挿入する
 $nl = if ($readme -match "`r`n") { "`r`n" } else { "`n" }
 
+# 冒頭のバージョン表記 ※改行を巻き込まないよう行末は先読みで判定する
+# 変更履歴の位置を取る前に置換する (後で置換すると文字数の変わる bump で挿入位置がずれる)
+# 確認と置換は同じ Regex で行う (-notmatch は大文字小文字を無視し、置換だけ空振りする)
+$headerRegex = New-Object regex "(?m)^v$([regex]::Escape($oldVersion))(?=[ \t]*\r?$)"
+if (-not $headerRegex.IsMatch($readme)) {
+    throw "README.md 冒頭に v$oldVersion の行が見つかりませんでした"
+}
+$readme = $headerRegex.Replace($readme, "v$newVersion", 1)
+
 # 変更履歴の起点。README の他セクションに似た行があっても誤挿入しないよう、
 # 挿入位置の検索はここから後ろだけを対象にする
 $sectionPattern = '(?m)^## 変更履歴[ \t]*\r?$'
@@ -108,7 +118,7 @@ catch {
     throw
 }
 Write-Host "  更新: source\$pluginName\PluginInfo.cs"
-Write-Host "  更新: README.md (変更履歴)"
+Write-Host "  更新: README.md (冒頭 / 変更履歴)"
 
 Write-Host ''
 Write-Host "README.md の変更履歴に『TODO: 変更内容を記載』を挿入しました。内容を書いてから release.bat を実行してください"

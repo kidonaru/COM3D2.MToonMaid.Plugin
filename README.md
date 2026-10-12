@@ -1,6 +1,6 @@
 # COM3D2.MToonMaid.Plugin
 
-v0.1.0.0
+v1.0.0.0
 
 
 - [COM3D2.MToonMaid.Plugin](#com3d2mtoonmaidplugin)
