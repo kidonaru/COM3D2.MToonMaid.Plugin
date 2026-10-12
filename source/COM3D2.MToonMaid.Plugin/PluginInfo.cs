@@ -9,6 +9,6 @@ namespace COM3D2.MToonMaid.Plugin
         public const string PluginGuid = "com.kidonaru.com3d2.mtoonmaid";
         public const string PluginName = "MToonMaid";
         public const string PluginFullName = "COM3D2." + PluginName + ".Plugin";
-        public const string PluginVersion = "0.1.0.0";
+        public const string PluginVersion = "1.0.0.0";
     }
 }
