@@ -404,6 +404,10 @@ namespace COM3D2.MToonMaid.Plugin
             Slider(view, GroupSettingKeys.ShadingToony, "境界の硬さ",
                 "陰影の境界の硬さ\n1 でくっきり分かれ、0 でなめらかなグラデーションになる",
                 shown.shadingToony, 0f, 1f, def.shadingToony, (s, v) => s.shadingToony = v);
+            // 共通タブでも共通の「ゲームの陰影」で無効にすると、それを個別に ON にしたグループへ効く値を変えられない
+            Toggle(view, GroupSettingKeys.FlatShadowRamp, "影側を一色に",
+                "主光源の影側をゲームのランプの最も暗い色一色で塗る\nOFF では影の中もランプのグラデーションで明るさが変わる\n「ゲームの陰影」が ON のマテリアルにだけ効く",
+                shown.flatShadowRamp, (s, v) => s.flatShadowRamp = v, !_editGroup.HasValue || gameShadowRate);
             Slider(view, GroupSettingKeys.GiEqualization, "環境光の均一化",
                 "環境光の向きによる明るさの差をならす割合\n1 でどの向きの面も同じ明るさになる",
                 shown.giEqualization, 0f, 1f, def.giEqualization, (s, v) => s.giEqualization = v);

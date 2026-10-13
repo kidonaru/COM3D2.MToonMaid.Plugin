@@ -89,7 +89,7 @@ namespace COM3D2.MToonMaid.Plugin
             }
         }
 
-        // 肌の鋭さを GroupSettings のフィールド初期値にすると、共通の既定が変わって肌以外のグループにも効く
+        // 肌の鋭さ・顔の影側の一色を GroupSettings のフィールド初期値にすると、共通の既定が変わって他のグループにも効く
         internal static GroupSettings CreateGroupDefault(PartGroup group)
         {
             var g = GroupSettings.CreateDefault();
@@ -97,6 +97,11 @@ namespace COM3D2.MToonMaid.Plugin
             {
                 g.shadingToony = SkinShadingToony;
                 g.overrides.Add(GroupSettingKeys.ShadingToony);
+            }
+            else if (group == PartGroup.Face)
+            {
+                g.flatShadowRamp = true;
+                g.overrides.Add(GroupSettingKeys.FlatShadowRamp);
             }
             return g;
         }

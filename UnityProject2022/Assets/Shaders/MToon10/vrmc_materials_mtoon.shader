@@ -8,6 +8,7 @@
 // - _UseOutlineTex が 1 のとき、輪郭の色を _OutlineColor ではなくゲームの線用テクスチャ (_OutlineTex) から取る
 // - _UseShadowRateToon が 1 のとき、ForwardBase の陰影をゲームの _ShadowRateToon (Toony と同じ N·L の座標) で決める
 // - _UseToonRamp が 1 のとき、ゲームの _ToonRamp を _ShadowRateToon と同じ座標で読み、主光源の分とリムに掛ける。環境光にはランプの光側の色を掛けない
+// - _FlatShadowRamp が 1 のとき、主光源の影側ではランプを最も暗い色 (_ToonRampDarkColor) 一色にする (影の中に N·L のグラデーションを出さない)
 // - _ShadeStrength で ForwardBase の陰影 (落ち影・前髪の影・ランプの暗さを含む) を光側へ寄せる。1 より上は影側の色を光側から遠ざけて濃くする
 // - ワールド基準の輪郭の幅に min(ビュー深度, _OutlineNearDistance) を掛け、近くでは画面上の太さを頭打ちにする (ゲームの Toony の線と同じ)
 // - ワールド基準の輪郭の幅に、正規化しない法線を逆転置行列で写した長さを掛ける (ゲームの Toony の線と同じく、スキンメッシュはボーンのスケールで太く、MeshRenderer は拡大で細くなる)
@@ -38,6 +39,8 @@ Shader "COM3D2/MToon10"
         _ToonRampLitColor ("ToonRamp Lit Color", Color) = (1, 1, 1, 1)
         // COM3D2: _ToonRamp の最も暗い画素の色。前髪の影の分をこの色へ寄せる (プラグインが設定する)
         _ToonRampDarkColor ("ToonRamp Dark Color", Color) = (1, 1, 1, 1)
+        // COM3D2: 1 なら主光源の影側 (_ShadowRateToon が 0 の側) でランプを N·L で読まず _ToonRampDarkColor 一色にする (プラグインが設定する)
+        _FlatShadowRamp ("Flat Shadow Ramp", Float) = 0
         // COM3D2: Toony の髪のハイライト。_HiTex / _HiRate / _HiPow はゲームと同名で、シェーダーを差し替えても値が引き継がれる
         _HiTex ("Highlight Texture", 2D) = "black" {}
         _HiRate ("Highlight Rate", Float) = 0

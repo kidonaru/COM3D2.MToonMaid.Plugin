@@ -52,6 +52,7 @@ half _ShadowRateToonV;
 half _ShadowRateShift;
 half _ShadeStrength;
 half _UseToonRamp;
+half _FlatShadowRamp;
 half _GiEqualization;
 half _AdditionalLightShade;
 half _HairShadowStrength;

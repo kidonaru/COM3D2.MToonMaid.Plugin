@@ -14,6 +14,7 @@ namespace COM3D2.MToonMaid.Plugin
         public const string ShadingToony = "shadingToony";
         public const string GiEqualization = "giEqualization";
         public const string AdditionalLightShade = "additionalLightShade";
+        public const string FlatShadowRamp = "flatShadowRamp";
         public const string HairShadow = "hairShadow";
         public const string HairShadowMode = "hairShadowMode";
         public const string HairShadowOffsetX = "hairShadowOffsetX";
@@ -35,7 +36,7 @@ namespace COM3D2.MToonMaid.Plugin
 
         public static readonly string[] All =
         {
-            ShadeColor, ShadeStrength, GameShadowRate, ShadingShift, ShadingToony, GiEqualization, AdditionalLightShade,
+            ShadeColor, ShadeStrength, GameShadowRate, ShadingShift, ShadingToony, GiEqualization, AdditionalLightShade, FlatShadowRamp,
             HairShadow, HairShadowMode, HairShadowOffsetX, HairShadowOffsetY, HairShadowResolution, HairShadowSoftness,
             HighlightScale,
             RimColor, RimFresnelPowerScale, RimLiftOffset, RimLightingMix,

@@ -97,9 +97,9 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.Equal(0.2f, loaded.common.shadingShift);
             Assert.NotNull(loaded.common.shadeColor);
             Assert.NotNull(loaded.hair.rimColor);
-            // 肌だけ境界の硬さを個別にする既定は新しいメイドと揃える
+            // 肌の境界の硬さ・顔の影側の一色を個別にする既定は新しいメイドと揃える
             Assert.Equal(Filled().skin.overrides, loaded.skin.overrides);
-            Assert.Empty(loaded.face.overrides);
+            Assert.Equal(Filled().face.overrides, loaded.face.overrides);
         }
 
         [Fact]

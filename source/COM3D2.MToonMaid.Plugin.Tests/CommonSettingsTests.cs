@@ -81,6 +81,49 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             g.outlineColor.g = 0.7f;
             g.receiveShadows = true;
             g.castShadows = false;
+            g.flatShadowRamp = true;
+        }
+
+        [Fact]
+        public void 影側を一色には既定でOFFで共通から継承する()
+        {
+            Assert.Contains(GroupSettingKeys.FlatShadowRamp, GroupSettingKeys.All);
+            Assert.False(GroupSettingKeys.IsGroupOnly(GroupSettingKeys.FlatShadowRamp));
+            Assert.False(GroupSettings.CreateDefault().flatShadowRamp);
+
+            var s = Filled();
+            s.common.flatShadowRamp = true;
+
+            Assert.True(s.Resolve(PartGroup.Hair).flatShadowRamp);
+        }
+
+        [Fact]
+        public void 新しいメイドは顔だけ影側を一色にする()
+        {
+            var s = Filled();
+
+            Assert.Equal(new[] { GroupSettingKeys.FlatShadowRamp }, s.face.overrides);
+            Assert.True(s.Resolve(PartGroup.Face).flatShadowRamp);
+            Assert.False(s.Resolve(PartGroup.Skin).flatShadowRamp);
+            Assert.False(s.Resolve(PartGroup.Hair).flatShadowRamp);
+            Assert.False(s.Resolve(PartGroup.Costume).flatShadowRamp);
+        }
+
+        [Fact]
+        public void 影側を一色にの要素が無いファイルはOFFで読む()
+        {
+            var path = Path.Combine(_dir, "old.xml");
+            MaidSettingsStore.Save(path, Filled());
+            var xml = File.ReadAllText(path);
+            xml = System.Text.RegularExpressions.Regex.Replace(xml, @"\s*<flatShadowRamp>\w+</flatShadowRamp>", "")
+                .Replace("<string>flatShadowRamp</string>", "");
+            Assert.DoesNotContain("flatShadowRamp", xml);
+            File.WriteAllText(path, xml);
+
+            var loaded = MaidSettingsStore.Load(path, _warnings.Add);
+
+            Assert.Empty(_warnings);
+            Assert.False(loaded.Resolve(PartGroup.Face).flatShadowRamp);
         }
 
         [Fact]
@@ -137,26 +180,26 @@ namespace COM3D2.MToonMaid.Plugin.Tests
         public void 個別を外すと共通の値に戻る()
         {
             var s = Filled();
-            s.SetOverride(PartGroup.Face, GroupSettingKeys.ShadingShift, true);
-            s.face.shadingShift = 0.2f;
+            s.SetOverride(PartGroup.Hair, GroupSettingKeys.ShadingShift, true);
+            s.hair.shadingShift = 0.2f;
 
-            s.SetOverride(PartGroup.Face, GroupSettingKeys.ShadingShift, false);
+            s.SetOverride(PartGroup.Hair, GroupSettingKeys.ShadingShift, false);
 
-            Assert.Equal(s.common.shadingShift, s.Resolve(PartGroup.Face).shadingShift);
-            Assert.Empty(s.face.overrides);
+            Assert.Equal(s.common.shadingShift, s.Resolve(PartGroup.Hair).shadingShift);
+            Assert.Empty(s.hair.overrides);
         }
 
         [Fact]
         public void 個別にするのを繰り返してもキーは1つ()
         {
             var s = Filled();
-            s.SetOverride(PartGroup.Face, GroupSettingKeys.ShadingShift, true);
-            s.face.shadingShift = 0.2f;
-            s.SetOverride(PartGroup.Face, GroupSettingKeys.ShadingShift, true);
+            s.SetOverride(PartGroup.Hair, GroupSettingKeys.ShadingShift, true);
+            s.hair.shadingShift = 0.2f;
+            s.SetOverride(PartGroup.Hair, GroupSettingKeys.ShadingShift, true);
 
-            Assert.Single(s.face.overrides);
+            Assert.Single(s.hair.overrides);
             // 既に個別なら共通の値で上書きしない
-            Assert.Equal(0.2f, s.face.shadingShift);
+            Assert.Equal(0.2f, s.hair.shadingShift);
         }
 
         [Fact]
@@ -218,7 +261,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
 
             Assert.Equal(new[] { GroupSettingKeys.ShadingToony }, s.skin.overrides);
             Assert.Equal(0.8f, s.Resolve(PartGroup.Skin).shadingToony);
-            Assert.Empty(s.face.overrides);
+            Assert.Equal(new[] { GroupSettingKeys.FlatShadowRamp }, s.face.overrides);
             Assert.Empty(s.hair.overrides);
             Assert.Empty(s.costume.overrides);
             Assert.Equal(GroupSettings.CreateDefault().shadingToony, s.Resolve(PartGroup.Face).shadingToony);
@@ -361,12 +404,12 @@ namespace COM3D2.MToonMaid.Plugin.Tests
         public void 重複したキーも個別を外せる()
         {
             var s = Filled();
-            s.face.overrides.Add(GroupSettingKeys.ShadingShift);
-            s.face.overrides.Add(GroupSettingKeys.ShadingShift);
+            s.hair.overrides.Add(GroupSettingKeys.ShadingShift);
+            s.hair.overrides.Add(GroupSettingKeys.ShadingShift);
 
-            s.SetOverride(PartGroup.Face, GroupSettingKeys.ShadingShift, false);
+            s.SetOverride(PartGroup.Hair, GroupSettingKeys.ShadingShift, false);
 
-            Assert.Empty(s.face.overrides);
+            Assert.Empty(s.hair.overrides);
         }
 
         [Fact]
@@ -393,7 +436,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.DoesNotContain("hairShadowYaw", GroupSettingKeys.All);
             Assert.Contains(GroupSettingKeys.HairShadowResolution, GroupSettingKeys.All);
             Assert.Contains(GroupSettingKeys.HairShadowSoftness, GroupSettingKeys.All);
-            Assert.Equal(25, GroupSettingKeys.All.Length);
+            Assert.Equal(26, GroupSettingKeys.All.Length);
             var def = GroupSettings.CreateDefault();
             Assert.Equal(1f, def.hairShadow);
             Assert.Equal(HairShadowMode.Fixed, def.hairShadowMode);

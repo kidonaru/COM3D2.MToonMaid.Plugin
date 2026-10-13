@@ -113,6 +113,7 @@ namespace COM3D2.MToonMaid.Plugin
             m.SetColor(MToonProps.ToonRampLitColor, ToColor(rampLit));
             m.SetColor(MToonProps.ShadeColor, ToColor(settings.shadeColor) * ToColor(rampShade));
             m.SetColor(MToonProps.ToonRampDarkColor, ToColor(backup.ramp.Dark));
+            m.SetFloat(MToonProps.FlatShadowRamp, settings.flatShadowRamp ? 1f : 0f);
             m.SetFloat(MToonProps.GiEqualization, settings.giEqualization);
             // 加算パスの係数のため、手編集の範囲外の値で他のライトの寄与を削らないよう抑える
             m.SetFloat(MToonProps.AdditionalLightShade, Mathf.Clamp01(settings.additionalLightShade));

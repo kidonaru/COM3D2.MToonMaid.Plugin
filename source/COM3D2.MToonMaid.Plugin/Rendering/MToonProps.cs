@@ -45,6 +45,7 @@ namespace COM3D2.MToonMaid.Plugin
         // COM3D2 のフォークで足したプロパティ。ゲーム側に同名が無いため MaterialBackup では退避しない
         public const string ToonRampLitColor = "_ToonRampLitColor";
         public const string ToonRampDarkColor = "_ToonRampDarkColor";
+        public const string FlatShadowRamp = "_FlatShadowRamp";
         public const string HiRateScale = "_HiRateScale";
         public const string AdditionalLightShade = "_AdditionalLightShade";
         public const string UseShadowRateToon = "_UseShadowRateToon";

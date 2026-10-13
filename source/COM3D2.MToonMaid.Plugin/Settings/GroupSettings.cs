@@ -21,6 +21,8 @@ namespace COM3D2.MToonMaid.Plugin
         public float giEqualization = 0.9f;
         // 追加ライト (ForwardAdd) の影側の明るさ (光側に対する倍率)。0 なら影側に当てず、1 なら光側と同じ明るさ (色だけ影色)
         public float additionalLightShade = 1f;
+        // ゲームのランプを読むとき、主光源の影側 (_ShadowRateToon が 0 の側) をランプの最も暗い色一色で塗る
+        public bool flatShadowRamp;
         // 前髪 (hairF) が顔へ落とす影の濃さ (0〜1)。0 なら影マップを作らない。顔にだけ効く
         public float hairShadow = 1f;
         public HairShadowMode hairShadowMode = HairShadowMode.Fixed;
@@ -106,6 +108,7 @@ namespace COM3D2.MToonMaid.Plugin
                 case GroupSettingKeys.ShadingToony: shadingToony = from.shadingToony; break;
                 case GroupSettingKeys.GiEqualization: giEqualization = from.giEqualization; break;
                 case GroupSettingKeys.AdditionalLightShade: additionalLightShade = from.additionalLightShade; break;
+                case GroupSettingKeys.FlatShadowRamp: flatShadowRamp = from.flatShadowRamp; break;
                 case GroupSettingKeys.HairShadow: hairShadow = from.hairShadow; break;
                 case GroupSettingKeys.HairShadowMode: hairShadowMode = from.hairShadowMode; break;
                 case GroupSettingKeys.HairShadowOffsetX: hairShadowOffsetX = from.hairShadowOffsetX; break;

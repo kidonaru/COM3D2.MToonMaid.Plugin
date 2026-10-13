@@ -163,7 +163,9 @@ inline half3 GetMToonLighting_ToonRamp(const UnityLighting lighting, const MToon
     const float2 uv = MToon_ClampToTexels(GetMToonLighting_ToonUv(dotNL), _ToonRamp_TexelSize);
     const half3 ramp = _ToonRamp.SampleLevel(sampler_ShadowRateToon, uv, 0).rgb;
     const half castShadow = MToon_IsOutlinePass() ? 1 : lighting.directLightAttenuation.x;
-    const half unshadowed = lerp(1, castShadow * (1 - hairShadow), GetMToonLighting_ShadowRate(dotNL));
+    const half shadowRate = GetMToonLighting_ShadowRate(dotNL);
+    // 影側を常に一色にすると、ゲームの Toony と同じく影の中もランプで陰影を付けたい衣装・髪までグラデーションが消える
+    const half unshadowed = lerp(1, castShadow * (1 - hairShadow), shadowRate) * lerp(1, shadowRate, _FlatShadowRamp);
     return max(0, lerp(GetMToonLighting_ToonRampLit(), lerp(_ToonRampDarkColor.rgb, ramp, unshadowed), shadeStrength));
 }
 
