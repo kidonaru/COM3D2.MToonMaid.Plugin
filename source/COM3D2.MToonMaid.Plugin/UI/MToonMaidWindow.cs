@@ -71,6 +71,8 @@ namespace COM3D2.MToonMaid.Plugin
         private int _tab = CommonTab;
         private readonly float[] _tabWidths = new float[TabLabels.Length];
         private readonly float[] _eyeSubTabWidths = new float[EyeSubTabLabels.Length];
+        private readonly bool[] _tabWrapsBefore = new bool[TabLabels.Length];
+        private readonly bool[] _eyeSubTabWrapsBefore = new bool[EyeSubTabLabels.Length];
         // 描いている最中の対象。null のグループは共通タブ
         private MaidSettings _settings;
         private PartGroup? _editGroup;
@@ -254,7 +256,7 @@ namespace COM3D2.MToonMaid.Plugin
             view.DrawLabel("変換済みマテリアル: " + _host.GetConvertedCount(maid), -1, RowHeight);
             view.DrawHorizontalLine();
 
-            _tab = DrawWrappedTabs(view, TabLabels, _tabWidths, _tab);
+            _tab = DrawWrappedTabs(view, TabLabels, _tabWidths, _tabWrapsBefore, _tab);
             var eyeTab = _tab == EyeTab;
             _editGroup = null;
             var presetTab = _tab == PresetTab;
@@ -270,7 +272,7 @@ namespace COM3D2.MToonMaid.Plugin
                     eye.enabled = v;
                     _eyeChanged = true;
                 }, "瞳を専用のシェーダーに置き換え、影・明るさ・ハイライトを足せるようにする\nOFF では影・明るさ・ハイライトの設定が効かない");
-                _eyeSubTab = DrawWrappedTabs(view, EyeSubTabLabels, _eyeSubTabWidths, _eyeSubTab);
+                _eyeSubTab = DrawWrappedTabs(view, EyeSubTabLabels, _eyeSubTabWidths, _eyeSubTabWrapsBefore, _eyeSubTab);
             }
             if (presetTab)
             {
@@ -325,7 +327,7 @@ namespace COM3D2.MToonMaid.Plugin
         }
 
         // DrawTabs は全タブを同じ幅で描くため、短い見出しのタブまで最長の見出しの幅に広がって 1 行に収まらない
-        private int DrawWrappedTabs(GUIView view, string[] labels, float[] widths, int current)
+        private int DrawWrappedTabs(GUIView view, string[] labels, float[] widths, bool[] wrapsBefore, int current)
         {
             var maxWidth = view.viewRect.width - view.currentPos.x - view.padding.x;
             var rows = 1;
@@ -335,7 +337,9 @@ namespace COM3D2.MToonMaid.Plugin
             {
                 var width = Mathf.Max(TabWidth, GUIView.CalcWidthCached(GUIView.gsButton, labels[i]));
                 widths[i] = width;
-                if (rowWidth > 0f && rowWidth + width > maxWidth)
+                var wraps = rowWidth > 0f && rowWidth + width > maxWidth;
+                wrapsBefore[i] = wraps;
+                if (wraps)
                 {
                     rows++;
                     rowWidth = 0f;
@@ -348,13 +352,13 @@ namespace COM3D2.MToonMaid.Plugin
             var sub = view.subView;
             for (var i = 0; i < labels.Length; i++)
             {
-                var width = widths[i];
-                if (sub.currentPos.x > 0f && sub.currentPos.x + width > sub.viewRect.width)
+                // 描画側で幅を比べ直すと、Mono の float 中間精度の違いで前段の行数とずれ、確保した高さの外へ折り返す
+                if (wrapsBefore[i])
                 {
                     sub.EndLayout();
                     sub.BeginLayout(GUIView.LayoutDirection.Horizontal);
                 }
-                if (sub.DrawButton(labels[i], width, RowHeight, true, i == current ? GUIView.option.accentColor : Color.white))
+                if (sub.DrawButton(labels[i], widths[i], RowHeight, true, i == current ? GUIView.option.accentColor : Color.white))
                 {
                     current = i;
                 }
