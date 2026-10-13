@@ -75,6 +75,49 @@ namespace COM3D2.MToonMaid.Plugin.Tests
         }
 
         [Fact]
+        public void 版1のファイルは顔の陰影の濃さを個別の0_8にする()
+        {
+            var path = Path.Combine(_dir, "v1.xml");
+            File.WriteAllText(path,
+                "<?xml version=\"1.0\"?><MToonMaid version=\"1\"><enabled>true</enabled>" +
+                "<face><shadeStrength>1.5</shadeStrength><overrides /></face></MToonMaid>");
+
+            var s = MaidSettingsStore.Load(path, _warnings.Add);
+
+            Assert.Contains(GroupSettingKeys.ShadeStrength, s.face.overrides);
+            Assert.Equal(0.8f, s.Resolve(PartGroup.Face).shadeStrength);
+            Assert.Equal(GroupSettings.CreateDefault().shadeStrength, s.Resolve(PartGroup.Skin).shadeStrength);
+        }
+
+        [Fact]
+        public void 版1で顔の陰影の濃さを個別にしていれば値を残す()
+        {
+            var path = Path.Combine(_dir, "v1-override.xml");
+            File.WriteAllText(path,
+                "<?xml version=\"1.0\"?><MToonMaid version=\"1\"><enabled>true</enabled>" +
+                "<face><shadeStrength>1.2</shadeStrength><overrides><string>shadeStrength</string></overrides></face></MToonMaid>");
+
+            var s = MaidSettingsStore.Load(path, _warnings.Add);
+
+            Assert.Equal(new[] { GroupSettingKeys.ShadeStrength }, s.face.overrides);
+            Assert.Equal(1.2f, s.Resolve(PartGroup.Face).shadeStrength);
+        }
+
+        [Fact]
+        public void 版2のファイルは顔の陰影の濃さを個別にし直さない()
+        {
+            var path = Path.Combine(_dir, "v2.xml");
+            File.WriteAllText(path,
+                "<?xml version=\"1.0\"?><MToonMaid version=\"2\"><enabled>true</enabled>" +
+                "<face><shadeStrength>1.5</shadeStrength><overrides /></face></MToonMaid>");
+
+            var s = MaidSettingsStore.Load(path, _warnings.Add);
+
+            Assert.Empty(s.face.overrides);
+            Assert.Equal(GroupSettings.CreateDefault().shadeStrength, s.Resolve(PartGroup.Face).shadeStrength);
+        }
+
+        [Fact]
         public void 壊れたファイルはbakへ退避してOFF()
         {
             var path = Path.Combine(_dir, "c.xml");

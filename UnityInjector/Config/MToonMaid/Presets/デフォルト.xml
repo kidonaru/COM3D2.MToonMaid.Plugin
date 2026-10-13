@@ -17,6 +17,13 @@
     <hairShadowSoftness>1</hairShadowSoftness>
     <receiveShadows>false</receiveShadows>
     <castShadows>true</castShadows>
+    <faceHalfShadow>true</faceHalfShadow>
+    <faceHalfAngle>80</faceHalfAngle>
+    <faceFullAngle>110</faceFullAngle>
+    <faceHalfFadeWidth>50</faceHalfFadeWidth>
+    <faceHalfSoftness>0.005</faceHalfSoftness>
+    <faceFrontAngle>60</faceFrontAngle>
+    <faceFrontShadowStrength>1</faceFrontShadowStrength>
     <highlightScale>1</highlightScale>
     <rimColorOverride>false</rimColorOverride>
     <rimColor r="0" g="0" b="0" a="1" />
@@ -48,6 +55,13 @@
     <hairShadowSoftness>1</hairShadowSoftness>
     <receiveShadows>true</receiveShadows>
     <castShadows>false</castShadows>
+    <faceHalfShadow>true</faceHalfShadow>
+    <faceHalfAngle>80</faceHalfAngle>
+    <faceFullAngle>110</faceFullAngle>
+    <faceHalfFadeWidth>50</faceHalfFadeWidth>
+    <faceHalfSoftness>0.005</faceHalfSoftness>
+    <faceFrontAngle>60</faceFrontAngle>
+    <faceFrontShadowStrength>1</faceFrontShadowStrength>
     <highlightScale>1</highlightScale>
     <rimColorOverride>false</rimColorOverride>
     <rimColor r="0" g="0" b="0" a="1" />
@@ -64,7 +78,7 @@
   </skin>
   <face>
     <shadeColor r="1" g="1" b="1" a="1" />
-    <shadeStrength>1</shadeStrength>
+    <shadeStrength>0.8</shadeStrength>
     <useGameShadowRate>true</useGameShadowRate>
     <shadingShift>-0.470085472</shadingShift>
     <shadingToony>0.95</shadingToony>
@@ -79,6 +93,13 @@
     <hairShadowSoftness>1</hairShadowSoftness>
     <receiveShadows>false</receiveShadows>
     <castShadows>true</castShadows>
+    <faceHalfShadow>true</faceHalfShadow>
+    <faceHalfAngle>80</faceHalfAngle>
+    <faceFullAngle>110</faceFullAngle>
+    <faceHalfFadeWidth>50</faceHalfFadeWidth>
+    <faceHalfSoftness>0.005</faceHalfSoftness>
+    <faceFrontAngle>60</faceFrontAngle>
+    <faceFrontShadowStrength>1</faceFrontShadowStrength>
     <highlightScale>1</highlightScale>
     <rimColorOverride>false</rimColorOverride>
     <rimColor r="0" g="0" b="0" a="1" />
@@ -94,6 +115,7 @@
     <overrides>
       <string>hairShadowOffsetX</string>
       <string>flatShadowRamp</string>
+      <string>shadeStrength</string>
     </overrides>
   </face>
   <hair>
@@ -113,6 +135,13 @@
     <hairShadowSoftness>1</hairShadowSoftness>
     <receiveShadows>true</receiveShadows>
     <castShadows>false</castShadows>
+    <faceHalfShadow>true</faceHalfShadow>
+    <faceHalfAngle>80</faceHalfAngle>
+    <faceFullAngle>110</faceFullAngle>
+    <faceHalfFadeWidth>50</faceHalfFadeWidth>
+    <faceHalfSoftness>0.005</faceHalfSoftness>
+    <faceFrontAngle>60</faceFrontAngle>
+    <faceFrontShadowStrength>1</faceFrontShadowStrength>
     <highlightScale>1</highlightScale>
     <rimColorOverride>true</rimColorOverride>
     <rimColor r="0.274999976" g="0.274999976" b="0.274999976" a="1" />
@@ -144,6 +173,13 @@
     <hairShadowSoftness>1</hairShadowSoftness>
     <receiveShadows>true</receiveShadows>
     <castShadows>false</castShadows>
+    <faceHalfShadow>true</faceHalfShadow>
+    <faceHalfAngle>80</faceHalfAngle>
+    <faceFullAngle>110</faceFullAngle>
+    <faceHalfFadeWidth>50</faceHalfFadeWidth>
+    <faceHalfSoftness>0.005</faceHalfSoftness>
+    <faceFrontAngle>60</faceFrontAngle>
+    <faceFrontShadowStrength>1</faceFrontShadowStrength>
     <highlightScale>1</highlightScale>
     <rimColorOverride>false</rimColorOverride>
     <rimColor r="0" g="0" b="0" a="1" />

@@ -154,22 +154,83 @@ inline half3 GetMToonLighting_ToonRampLit()
     return _ToonRamp.SampleLevel(sampler_ShadowRateToon, uv, 0).rgb;
 }
 
+// COM3D2: 顔の半面切り替えの影。仰角 60°〜90° で影を薄めて消す (ラジアン)
+#define MTOON_FACE_HALF_ELEVATION_FADE_START 1.0471976
+#define MTOON_FACE_HALF_ELEVATION_FADE_END 1.5707963
+// COM3D2: 正面の範囲の外側で N·L の影へつなぐ角度の幅 (20°、ラジアン)
+#define MTOON_FACE_FRONT_FADE_WIDTH 0.3490659
+
+// 幅 0 で smoothstep にすると 0 除算になる
+inline half MToon_SmoothStepOrStep(const float edge0, const float edge1, const float x)
+{
+    return edge1 > edge0 ? smoothstep(edge0, edge1, x) : step(edge0, x);
+}
+
+inline bool MToon_IsFaceHalfShadowOn()
+{
+    return _FaceHalfShadow > 0.5 && dot(_FaceHalfForward.xyz, _FaceHalfForward.xyz) >= 1e-6;
+}
+
+// COM3D2: 半面切り替えの影を使う割合 (1 で半面・全面、0 で N·L)。
+// 正面を外れた顎の下まで半面・全面にすると、真上の光で顎の下まで明るく、真正面の光で耳の後ろまで明るくなる
+inline half GetMToonLighting_FaceFrontWeight(const MToonInput input)
+{
+    const float angle = acos(clamp(dot(input.normalWS, normalize(_FaceHalfForward.xyz)), -1, 1));
+    return 1 - smoothstep(_FaceFrontAngle, _FaceFrontAngle + MTOON_FACE_FRONT_FADE_WIDTH, angle);
+}
+
+// COM3D2: 半面切り替えの影の光側の割合 (1 で影なし)。
+// 主光源の向きをプラグインから角度で渡すと、前髪の影で起きたように、プラグインが選ぶライトとシェーダーを照らすライトがずれる。
+// 半面を法線の向きで分けると、鼻や頬の凹凸で境目がまだらになる。頭の中心を通る左右の境目の面からの距離で分ける
+inline half GetMToonLighting_FaceHalfLit(const UnityLighting lighting, const MToonInput input)
+{
+    const float3 l = lighting.directLightDirection;
+    // 平行光が無いと光の向きが normalize(0) の NaN になる。NaN との比較で弾くと、IEEE を守らない最適化で比較が反転して素通りしうる (max は NaN を捨てる)
+    if (max(dot(l, l), 0) < 0.5)
+    {
+        return 1;
+    }
+    const float3 forward = normalize(_FaceHalfForward.xyz);
+    const float3 up = normalize(_FaceHalfUp.xyz);
+    const float3 right = cross(up, forward);
+    const float lf = dot(l, forward);
+    const float lr = dot(l, right);
+    const float horizontal = sqrt(lf * lf + lr * lr);
+    // 真上・真下の光で atan2(0, 0) にすると NaN になりうる (そのとき仰角で影は消えるので値は使わない)
+    const float theta = horizontal > 1e-5 ? atan2(abs(lr), lf) : 0;
+    const float elevation = atan2(abs(dot(l, up)), max(horizontal, 1e-5));
+    const half k = 1 - smoothstep(MTOON_FACE_HALF_ELEVATION_FADE_START, MTOON_FACE_HALF_ELEVATION_FADE_END, elevation);
+    const float halfFade = _FaceHalfFadeWidth * 0.5;
+    const float fullFade = _FaceFullFadeWidth * 0.5;
+    const half oppositeSideShadow = MToon_SmoothStepOrStep(_FaceHalfAngle - halfFade, _FaceHalfAngle + halfFade, theta) * k;
+    const half lightSideShadow = MToon_SmoothStepOrStep(_FaceFullAngle - fullFade, _FaceFullAngle + fullFade, theta) * k;
+    const float towardLight = dot(input.positionWS - _FaceHalfCenter.xyz, right) * sign(lr);
+    const half t = MToon_SmoothStepOrStep(-_FaceHalfSoftness, _FaceHalfSoftness, towardLight);
+    return 1 - lerp(oppositeSideShadow, lightSideShadow, t) * _FaceFrontShadowStrength;
+}
+
 // COM3D2: ランプを N·L の座標だけで読むと、落ち影と前髪の影の中が光側のままで、2 色の近似 (OFF) より明るく色も抜ける。
 // _ShadowRateToon の影側まで寄せると、自分の影が落ちる裏側でランプの境界の帯が消える。
 // アウトラインは線の後ろの面の落ち影を拾うため、前髪の影と同じく見ない
 
-inline half3 GetMToonLighting_ToonRamp(const UnityLighting lighting, const MToonInput input, const half dotNL, const half hairShadow, const half shadeStrength)
+inline half3 GetMToonLighting_ToonRamp(const UnityLighting lighting, const MToonInput input, const half dotNL, const half hairShadow, const half shadeStrength, const half faceFrontWeight, const half faceLit)
 {
     const float2 uv = MToon_ClampToTexels(GetMToonLighting_ToonUv(dotNL), _ToonRamp_TexelSize);
-    const half3 ramp = _ToonRamp.SampleLevel(sampler_ShadowRateToon, uv, 0).rgb;
+    // 半面切り替えの影でランプを N·L の位置で読むと、光側の境目近くのグラデーションが顔に残る
+    const half3 ramp = lerp(_ToonRamp.SampleLevel(sampler_ShadowRateToon, uv, 0).rgb, GetMToonLighting_ToonRampLit(), faceFrontWeight);
     const half castShadow = MToon_IsOutlinePass() ? 1 : lighting.directLightAttenuation.x;
-    const half shadowRate = GetMToonLighting_ShadowRate(dotNL);
+    const half nlRate = GetMToonLighting_ShadowRate(dotNL);
+    const half occlusion = castShadow * (1 - hairShadow);
     // 影側を常に一色にすると、ゲームの Toony と同じく影の中もランプで陰影を付けたい衣装・髪までグラデーションが消える
-    const half unshadowed = lerp(1, castShadow * (1 - hairShadow), shadowRate) * lerp(1, shadowRate, _FlatShadowRamp);
+    const half nlUnshadowed = lerp(1, occlusion, nlRate) * lerp(1, nlRate, _FlatShadowRamp);
+    // 半面切り替えの影で faceLit を掛けないと、光側の色で読んだランプのまま影側が暗くならない。
+    // N·L と同じく落ち影を光側の割合だけに掛けると、濃さ 1 未満で薄めた影の半面に入った前髪の影・落ち影が光側のものより明るくなる
+    const half faceUnshadowed = occlusion * faceLit;
+    const half unshadowed = lerp(nlUnshadowed, faceUnshadowed, faceFrontWeight);
     return max(0, lerp(GetMToonLighting_ToonRampLit(), lerp(_ToonRampDarkColor.rgb, ramp, unshadowed), shadeStrength));
 }
 
-inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInput input, const half dotNL, const half hairShadow)
+inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInput input, const half dotNL, const half hairShadow, const half faceFrontWeight, const half faceLit)
 {
     const half shadeShift = GetMToonLighting_Reflectance_ShadingShift(input);
     const half shadeToony = _ShadingToonyFactor;
@@ -184,9 +245,10 @@ inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInpu
     {
         const half shadeInput = lerp(-1, 1, mtoon_linearstep(-1, 1, dotNL));
         // [branch] の if で OFF のときの読み込みを省こうとすると、シェーダーコンパイラが内部エラーで止まる
-        const half toonShade = _UseShadowRateToon > 0.5
+        const half nlShade = _UseShadowRateToon > 0.5
             ? GetMToonLighting_ShadowRate(dotNL)
             : mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift);
+        const half toonShade = lerp(nlShade, faceLit, faceFrontWeight);
         return toonShade * lighting.directLightAttenuation.x * (1 - hairShadow);
     }
     else
@@ -320,14 +382,24 @@ half4 GetMToonLighting(const UnityLighting unityLight, const MToonInput input)
 {
     const half dotNL = GetMToonLighting_DotNL(unityLight, input);
     const half hairShadow = MToon_IsForwardBasePass() ? GetMToonLighting_HairShadow(input) : 0;
+    // COM3D2: 追加ライト (ForwardAdd) は N·L の影のまま
+    const bool faceHalf = MToon_IsForwardBasePass() && MToon_IsFaceHalfShadowOn();
+    // 三項演算子は両辺を評価するため、OFF の全 MToon の画素でも角度の計算が走る
+    half faceFrontWeight = 0;
+    half faceLit = 1;
+    [branch] if (faceHalf)
+    {
+        faceFrontWeight = GetMToonLighting_FaceFrontWeight(input);
+        faceLit = GetMToonLighting_FaceHalfLit(unityLight, input);
+    }
     // COM3D2: 追加ライトの影側は _AdditionalLightShade で決めるため、陰影の濃さは ForwardBase だけに掛ける
     const half shadeStrength = MToon_IsForwardBasePass() ? _ShadeStrength : 1;
     // 1 より上で陰影の割合を外挿すると、影が濃くならずに境界が光側へ広がる
-    const half shade = lerp(1, GetMToonLighting_Shade(unityLight, input, dotNL, hairShadow), min(shadeStrength, 1));
+    const half shade = lerp(1, GetMToonLighting_Shade(unityLight, input, dotNL, hairShadow, faceFrontWeight, faceLit), min(shadeStrength, 1));
     const half shadeDepth = max(shadeStrength, 1);
     const half shadow = GetMToonLighting_Shadow(unityLight, dotNL, shade);
     // COM3D2: アウトラインのパスも ForwardBase なので、線に混ぜる陰影にもランプが掛かる (環境光・追加ライトには掛けない)
-    const half3 rampColor = MToon_IsForwardBasePass() && _UseToonRamp > 0.5 ? GetMToonLighting_ToonRamp(unityLight, input, dotNL, hairShadow, shadeStrength) : half3(1, 1, 1);
+    const half3 rampColor = MToon_IsForwardBasePass() && _UseToonRamp > 0.5 ? GetMToonLighting_ToonRamp(unityLight, input, dotNL, hairShadow, shadeStrength, faceFrontWeight, faceLit) : half3(1, 1, 1);
 
     const half3 direct = GetMToonLighting_DirectLighting(unityLight, input, shade, shadow, rampColor, shadeDepth);
     const half3 indirect = GetMToonLighting_GlobalIllumination(unityLight, input);

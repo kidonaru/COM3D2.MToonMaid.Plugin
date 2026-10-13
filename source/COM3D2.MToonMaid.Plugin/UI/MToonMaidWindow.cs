@@ -19,6 +19,7 @@ namespace COM3D2.MToonMaid.Plugin
         private const float TabWidth = 52f;
         private const float ResetButtonWidth = 200f;
         private const float OverrideToggleWidth = 20f;
+        private const float CentimetersPerMeter = 100f;
         // SceneEditor が内容の先頭の水平線の下に空けている量
         private const float ScrollTopSpace = 5f;
         // 0 番が共通、1 番以降が PartGroup の順
@@ -422,6 +423,10 @@ namespace COM3D2.MToonMaid.Plugin
                 Toggle(view, GroupSettingKeys.CastShadows, "顔が影を落とす", "顔の落ち影を他の物へ落とす",
                     shown.castShadows, (s, v) => s.castShadows = v);
             }
+            if (Shows(GroupSettingKeys.FaceHalfShadow))
+            {
+                DrawFaceHalfShadowSettings(view, shown, groupOnlyDef);
+            }
             if (Shows(GroupSettingKeys.HairShadow))
             {
                 DrawHairShadowSettings(view, shown, groupOnlyDef);
@@ -475,6 +480,37 @@ namespace COM3D2.MToonMaid.Plugin
         private bool Shows(string key)
         {
             return _editGroup.HasValue ? GroupSettingKeys.AppliesTo(key, _editGroup.Value) : !GroupSettingKeys.IsGroupOnly(key);
+        }
+
+        private void DrawFaceHalfShadowSettings(GUIView view, GroupSettings shown, GroupSettings def)
+        {
+            Toggle(view, GroupSettingKeys.FaceHalfShadow, "半面切り替えの影",
+                "顔の自分の影を、面の向きではなく光の水平方向の角度で切り替える\n正面寄りの光で影なし、横からで光と反対側の半面、後ろ寄りで顔全体が影になる\n効くのは正面の範囲の面だけで、顎の下や耳は今どおり面の向きで影を付ける\n落ち影・前髪の影・追加ライトは今どおり",
+                shown.faceHalfShadow, (s, v) => s.faceHalfShadow = v);
+            // OFF の間に行を消すと、トグルの切り替えで入力欄キャッシュの番号がずれる
+            var editable = shown.faceHalfShadow;
+            Slider(view, GroupSettingKeys.FaceHalfAngle, "半面になる角度",
+                "頭の正面から光までの水平の角度 (度) がこれを超えると、光と反対側の半面が影になる\n0 では光が正面をまたぐときに影の左右が一瞬で入れ替わる",
+                shown.faceHalfAngle, 0f, GroupSettings.MaxFaceHalfAngle, def.faceHalfAngle, (s, v) => s.faceHalfAngle = v, editable: editable);
+            Slider(view, GroupSettingKeys.FaceFullAngle, "全面になる角度",
+                "頭の正面から光までの水平の角度 (度) がこれを超えると、顔全体が影になる\n半面になる角度より小さいときは半面になる角度として扱う\n180 では光が真後ろをまたぐときに影の左右が一瞬で入れ替わる",
+                shown.faceFullAngle, 0f, GroupSettings.MaxFaceHalfAngle, def.faceFullAngle, (s, v) => s.faceFullAngle = v, editable: editable);
+            Slider(view, GroupSettingKeys.FaceHalfFadeWidth, "フェード幅",
+                "影を切り替える角度の幅 (度)\nこの幅の間で影がなめらかに濃くなり、0 で一瞬で切り替わる\n切り替わる角度から 0 や 180 までの 2 倍より広い分は効かない",
+                shown.faceHalfFadeWidth, 0f, GroupSettings.MaxFaceHalfFadeWidth, def.faceHalfFadeWidth, (s, v) => s.faceHalfFadeWidth = v, editable: editable);
+            // m のままでは 0.005 刻みの調整が既定の書式 (小数 2 桁) で見えない
+            Slider(view, GroupSettingKeys.FaceHalfSoftness, "境目のぼかし",
+                "左右の半面の境目をぼかす幅 (cm)\n0 でくっきり分かれる",
+                shown.faceHalfSoftness * CentimetersPerMeter,
+                0f, GroupSettings.MaxFaceHalfSoftness * CentimetersPerMeter,
+                def.faceHalfSoftness * CentimetersPerMeter,
+                (s, v) => s.faceHalfSoftness = v / CentimetersPerMeter, editable: editable);
+            Slider(view, GroupSettingKeys.FaceFrontAngle, "正面の範囲",
+                "顔の正面から面の向きまでの角度 (度) がこれ以内の面だけを半面・全面で切り替える\n外側の顎の下や耳は面の向きで影を付け、境目はなめらかにつなぐ\n180 で顔全体を半面・全面で切り替える",
+                shown.faceFrontAngle, 0f, GroupSettings.MaxFaceFrontAngle, def.faceFrontAngle, (s, v) => s.faceFrontAngle = v, editable: editable);
+            Slider(view, GroupSettingKeys.FaceFrontShadowStrength, "正面の影の濃さ",
+                "正面の範囲の半面・全面の影の濃さ\n1 で影色まで暗くなり、0 で影が消える\n顎の下や耳の影・落ち影・前髪の影は変わらない",
+                shown.faceFrontShadowStrength, 0f, GroupSettings.MaxFaceFrontShadowStrength, def.faceFrontShadowStrength, (s, v) => s.faceFrontShadowStrength = v, editable: editable);
         }
 
         private void DrawHairShadowSettings(GUIView view, GroupSettings shown, GroupSettings def)

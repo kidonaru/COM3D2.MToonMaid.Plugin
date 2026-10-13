@@ -36,10 +36,28 @@ namespace COM3D2.MToonMaid.Plugin
         // 顔 (head スロット) の Renderer の影を受ける・落とす
         public bool receiveShadows;
         public bool castShadows = true;
+        // 顔の自分の影を N·L ではなく主光源の水平の角度で「影なし → 光と反対側の半面 → 全面」と切り替える。顔にだけ効く
+        public bool faceHalfShadow = true;
+        // 頭の正面から光までの水平の角度 (度) が、これを超えると半面・全面が影になる
+        public float faceHalfAngle = 80f;
+        public float faceFullAngle = 110f;
+        // 切り替えをなめらかにする角度の幅 (度)。0 で一瞬で切り替わる
+        public float faceHalfFadeWidth = 50f;
+        // 左右の半面の境目のぼかしの幅 (m)
+        public float faceHalfSoftness = 0.005f;
+        // 顔の正面から法線までの角度 (度)。これより外側は N·L の影にする
+        public float faceFrontAngle = 60f;
+        // 正面の範囲の半面・全面の影の濃さ。0 で消え、N·L の影・落ち影は変わらない
+        public float faceFrontShadowStrength = 1f;
 
         public const float MaxHairShadowOffset = 0.02f;
         public const float MaxHairShadowSoftness = 3f;
         public const float MaxShadeStrength = 2f;
+        public const float MaxFaceHalfAngle = 180f;
+        public const float MaxFaceHalfFadeWidth = 90f;
+        public const float MaxFaceHalfSoftness = 0.02f;
+        public const float MaxFaceFrontAngle = 180f;
+        public const float MaxFaceFrontShadowStrength = 1f;
 
         // 天使の輪 (Toony の髪のハイライト) の強さ。_HiTex を持たないマテリアルには効かない
         public float highlightScale = 1f;
@@ -133,6 +151,13 @@ namespace COM3D2.MToonMaid.Plugin
                     break;
                 case GroupSettingKeys.ReceiveShadows: receiveShadows = from.receiveShadows; break;
                 case GroupSettingKeys.CastShadows: castShadows = from.castShadows; break;
+                case GroupSettingKeys.FaceHalfShadow: faceHalfShadow = from.faceHalfShadow; break;
+                case GroupSettingKeys.FaceHalfAngle: faceHalfAngle = from.faceHalfAngle; break;
+                case GroupSettingKeys.FaceFullAngle: faceFullAngle = from.faceFullAngle; break;
+                case GroupSettingKeys.FaceHalfFadeWidth: faceHalfFadeWidth = from.faceHalfFadeWidth; break;
+                case GroupSettingKeys.FaceHalfSoftness: faceHalfSoftness = from.faceHalfSoftness; break;
+                case GroupSettingKeys.FaceFrontAngle: faceFrontAngle = from.faceFrontAngle; break;
+                case GroupSettingKeys.FaceFrontShadowStrength: faceFrontShadowStrength = from.faceFrontShadowStrength; break;
                 default: throw new ArgumentOutOfRangeException(nameof(key), key, null);
             }
         }

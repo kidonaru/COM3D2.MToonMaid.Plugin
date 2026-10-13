@@ -14,7 +14,6 @@ namespace COM3D2.MToonMaid.Plugin
         private const int DepthBits = 16;
         // head スロットのバウンズの対角の半分に掛ける余白 (前髪の毛先が頭のバウンズからはみ出しても収まるように)
         private const float RadiusScale = 1.2f;
-        private const string HeadSlot = "head";
         private const string HairFrontSlot = "hairF";
         // シーン中のライトを取り直す間隔 (フレーム)。SceneEditor でライトを足してから効くまでの遅れになる
         private const int LightRefreshInterval = 30;
@@ -54,7 +53,7 @@ namespace COM3D2.MToonMaid.Plugin
         {
             var body = maid.body0;
             var head = body != null ? body.trsHead : null;
-            var headRenderer = FindRenderer(body, HeadSlot);
+            var headRenderer = HeadFrame.FindHeadRenderer(body);
             if (head == null || headRenderer == null || faceMaterials.Count == 0)
             {
                 return false;
@@ -73,15 +72,15 @@ namespace COM3D2.MToonMaid.Plugin
             var toLight = ToLight(face, head, light);
 
             // ワールドの AABB は頭の回転で大きさが変わり影マップの解像度が脈動するため、回転によらないローカルのバウンズから取る
-            var boundsSpace = BoundsSpace(headRenderer);
+            var boundsSpace = HeadFrame.BoundsSpace(headRenderer);
             var radius = headRenderer.localBounds.extents.magnitude * MaxAbs(boundsSpace.lossyScale) * RadiusScale;
             if (!(radius > 0f) || float.IsInfinity(radius))
             {
                 return false;
             }
             // 頭のボーンの原点は首寄りにあるため、余白が片側で削れないようバウンズの中心を投影の中心にする
-            var center = boundsSpace.TransformPoint(headRenderer.localBounds.center);
-            var projection = HairShadowProjection.Create(ToArray(center), toLight, ToArray(HeadTop(head)), ToArray(FaceForward(head)), radius);
+            var center = HeadFrame.Center(headRenderer);
+            var projection = HairShadowProjection.Create(ToArray(center), toLight, ToArray(HeadFrame.HeadTop(head)), ToArray(HeadFrame.FaceForward(head)), radius);
             var worldToShadow = ToMatrix(projection);
             var sampleMatrix = ToMatrix(HairShadowProjection.Offset(projection, ToArray(WorldOffset(face, head))));
 
@@ -115,26 +114,10 @@ namespace COM3D2.MToonMaid.Plugin
             UnityEngine.Object.Destroy(_casterMaterial);
         }
 
-        // COM3D2 の Bip01 Head は顔の正面が up、頭のてっぺんが -right、メイドから見て右が -forward
-        private static Vector3 FaceForward(Transform head)
-        {
-            return head.up;
-        }
-
-        private static Vector3 HeadTop(Transform head)
-        {
-            return -head.right;
-        }
-
-        private static Vector3 MaidRight(Transform head)
-        {
-            return -head.forward;
-        }
-
         /// <summary>顔から光へ向かう向き</summary>
         private static float[] ToLight(GroupSettings face, Transform head, Light light)
         {
-            return ToArray(face.hairShadowMode == HairShadowMode.Light ? -light.transform.forward : FaceForward(head));
+            return ToArray(face.hairShadowMode == HairShadowMode.Light ? -light.transform.forward : HeadFrame.FaceForward(head));
         }
 
         private static bool CastsShadows(Light light)
@@ -148,7 +131,7 @@ namespace COM3D2.MToonMaid.Plugin
         private static Vector3 WorldOffset(GroupSettings face, Transform head)
         {
             const float max = GroupSettings.MaxHairShadowOffset;
-            return MaidRight(head) * ClampFinite(face.hairShadowOffsetX, -max, max) + HeadTop(head) * ClampFinite(face.hairShadowOffsetY, -max, max);
+            return HeadFrame.MaidRight(head) * ClampFinite(face.hairShadowOffsetX, -max, max) + HeadFrame.HeadTop(head) * ClampFinite(face.hairShadowOffsetY, -max, max);
         }
 
         private static float ClampFinite(float value, float min, float max)
@@ -293,18 +276,6 @@ namespace COM3D2.MToonMaid.Plugin
                 return m.GetInt(AlphaModeId) == MToonProps.AlphaModeCutout;
             }
             return ToonMaterialClassifier.IsCutout(m.shader.name);
-        }
-
-        private static SkinnedMeshRenderer FindRenderer(TBody body, string slot)
-        {
-            var skin = body != null ? body.GetSlot(slot) : null;
-            return skin != null && skin.obj != null ? skin.obj.GetComponentInChildren<SkinnedMeshRenderer>() : null;
-        }
-
-        /// <summary>SkinnedMeshRenderer の localBounds はルートボーンの空間にある</summary>
-        private static Transform BoundsSpace(SkinnedMeshRenderer r)
-        {
-            return r.rootBone != null ? r.rootBone : r.transform;
         }
 
         private static float MaxAbs(Vector3 v)

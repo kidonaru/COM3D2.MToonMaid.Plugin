@@ -120,6 +120,7 @@ namespace COM3D2.MToonMaid.Plugin
                 settings = new MaidSettings();
             }
             settings.FillMissing();
+            settings.Upgrade();
             return settings;
         }
 

@@ -9,6 +9,7 @@
 // - _UseShadowRateToon が 1 のとき、ForwardBase の陰影をゲームの _ShadowRateToon (Toony と同じ N·L の座標) で決める
 // - _UseToonRamp が 1 のとき、ゲームの _ToonRamp を _ShadowRateToon と同じ座標で読み、主光源の分とリムに掛ける。環境光にはランプの光側の色を掛けない
 // - _FlatShadowRamp が 1 のとき、主光源の影側ではランプを最も暗い色 (_ToonRampDarkColor) 一色にする (影の中に N·L のグラデーションを出さない)
+// - _FaceHalfShadow が 1 で頭の向き (_FaceHalfForward) が入っている間、ForwardBase の自分の影を N·L ではなく主光源の水平の角度で「影なし → 光と反対側の半面 → 全面」と切り替える。法線が顔の正面から _FaceFrontAngle より外れた面 (顎の下・耳など) は N·L の影へつなぐ。正面の範囲の半面・全面の影の濃さは _FaceFrontShadowStrength で決める
 // - _ShadeStrength で ForwardBase の陰影 (落ち影・前髪の影・ランプの暗さを含む) を光側へ寄せる。1 より上は影側の色を光側から遠ざけて濃くする
 // - ワールド基準の輪郭の幅に min(ビュー深度, _OutlineNearDistance) を掛け、近くでは画面上の太さを頭打ちにする (ゲームの Toony の線と同じ)
 // - ワールド基準の輪郭の幅に、正規化しない法線を逆転置行列で写した長さを掛ける (ゲームの Toony の線と同じく、スキンメッシュはボーンのスケールで太く、MeshRenderer は拡大で細くなる)
@@ -79,6 +80,19 @@ Shader "COM3D2/MToon10"
         _HairShadowTex ("Hair Shadow Depth", 2D) = "white" {}
         _HairShadowStrength ("Hair Shadow Strength", Range(0, 1)) = 0
         _HairShadowSoftness ("Hair Shadow Softness (texels)", Range(0, 3)) = 1
+        // COM3D2: 顔の半面切り替えの影。角度・幅はラジアン、ぼかしは m (プラグインが設定する)
+        _FaceHalfShadow ("Face Half Shadow", Float) = 0
+        _FaceHalfAngle ("Face Half Angle (rad)", Float) = 1.3962634
+        _FaceFullAngle ("Face Full Angle (rad)", Float) = 1.9198622
+        _FaceHalfFadeWidth ("Face Half Fade Width (rad)", Float) = 0.8726646
+        _FaceFullFadeWidth ("Face Full Fade Width (rad)", Float) = 0.8726646
+        _FaceHalfSoftness ("Face Half Softness (m)", Float) = 0.005
+        _FaceFrontAngle ("Face Front Angle (rad)", Float) = 1.0471976
+        _FaceFrontShadowStrength ("Face Front Shadow Strength", Float) = 1
+        // COM3D2: 頭の中心・正面・頭の上 (ワールド)。正面が 0 の間は N·L の影で描く (プラグインが毎フレーム設定する)
+        _FaceHalfCenter ("Face Half Center", Vector) = (0, 0, 0, 0)
+        _FaceHalfForward ("Face Half Forward", Vector) = (0, 0, 0, 0)
+        _FaceHalfUp ("Face Half Up", Vector) = (0, 0, 0, 0)
 
         // Emission
         [HDR] _EmissionColor ("emissiveFactor", Color) = (0, 0, 0, 1) // Unity specified name

@@ -82,6 +82,13 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             g.receiveShadows = true;
             g.castShadows = false;
             g.flatShadowRamp = true;
+            g.faceHalfShadow = false;
+            g.faceHalfAngle = 30f;
+            g.faceFullAngle = 150f;
+            g.faceHalfFadeWidth = 10f;
+            g.faceHalfSoftness = 0.01f;
+            g.faceFrontAngle = 80f;
+            g.faceFrontShadowStrength = 0.8f;
         }
 
         [Fact]
@@ -102,7 +109,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
         {
             var s = Filled();
 
-            Assert.Equal(new[] { GroupSettingKeys.FlatShadowRamp }, s.face.overrides);
+            Assert.Contains(GroupSettingKeys.FlatShadowRamp, s.face.overrides);
             Assert.True(s.Resolve(PartGroup.Face).flatShadowRamp);
             Assert.False(s.Resolve(PartGroup.Skin).flatShadowRamp);
             Assert.False(s.Resolve(PartGroup.Hair).flatShadowRamp);
@@ -124,6 +131,109 @@ namespace COM3D2.MToonMaid.Plugin.Tests
 
             Assert.Empty(_warnings);
             Assert.False(loaded.Resolve(PartGroup.Face).flatShadowRamp);
+        }
+
+        private static readonly string[] FaceHalfKeys =
+        {
+            GroupSettingKeys.FaceHalfShadow, GroupSettingKeys.FaceHalfAngle, GroupSettingKeys.FaceFullAngle,
+            GroupSettingKeys.FaceHalfFadeWidth, GroupSettingKeys.FaceHalfSoftness, GroupSettingKeys.FaceFrontAngle,
+            GroupSettingKeys.FaceFrontShadowStrength,
+        };
+
+        [Fact]
+        public void 半面切り替えの影は既定でONの顔専用の項目()
+        {
+            foreach (var key in FaceHalfKeys)
+            {
+                Assert.Contains(key, GroupSettingKeys.All);
+                Assert.True(GroupSettingKeys.IsGroupOnly(key));
+                Assert.True(GroupSettingKeys.AppliesTo(key, PartGroup.Face));
+                Assert.False(GroupSettingKeys.AppliesTo(key, PartGroup.Skin));
+                Assert.False(GroupSettingKeys.AppliesTo(key, PartGroup.Hair));
+                Assert.False(GroupSettingKeys.AppliesTo(key, PartGroup.Costume));
+            }
+            var def = GroupSettings.CreateDefault();
+            Assert.True(def.faceHalfShadow);
+            Assert.Equal(80f, def.faceHalfAngle);
+            Assert.Equal(110f, def.faceFullAngle);
+            Assert.Equal(50f, def.faceHalfFadeWidth);
+            Assert.Equal(0.005f, def.faceHalfSoftness);
+            Assert.Equal(60f, def.faceFrontAngle);
+            Assert.Equal(1f, def.faceFrontShadowStrength);
+            Assert.Equal(180f, GroupSettings.MaxFaceHalfAngle);
+            Assert.Equal(180f, GroupSettings.MaxFaceFrontAngle);
+            Assert.Equal(1f, GroupSettings.MaxFaceFrontShadowStrength);
+            Assert.Equal(90f, GroupSettings.MaxFaceHalfFadeWidth);
+            Assert.Equal(0.02f, GroupSettings.MaxFaceHalfSoftness);
+        }
+
+        [Fact]
+        public void 半面切り替えの影は共通の値を継承しない()
+        {
+            var s = Filled();
+            // 共通タブには出ないが、手編集で共通に値があっても顔へ流れないこと
+            s.common.faceHalfShadow = false;
+            s.common.faceHalfAngle = 10f;
+
+            Assert.True(s.Resolve(PartGroup.Face).faceHalfShadow);
+            Assert.Equal(80f, s.Resolve(PartGroup.Face).faceHalfAngle);
+        }
+
+        [Fact]
+        public void 半面切り替えの影を保存して読み直せる()
+        {
+            var path = Path.Combine(_dir, "facehalf.xml");
+            var s = Filled();
+            foreach (var key in FaceHalfKeys)
+            {
+                s.SetOverride(PartGroup.Face, key, true);
+            }
+            s.face.faceHalfShadow = false;
+            s.face.faceHalfAngle = 50f;
+            s.face.faceFullAngle = 120f;
+            s.face.faceHalfFadeWidth = 0f;
+            s.face.faceHalfSoftness = 0.012f;
+            s.face.faceFrontAngle = 90f;
+            s.face.faceFrontShadowStrength = 0.3f;
+
+            MaidSettingsStore.Save(path, s);
+            var loaded = MaidSettingsStore.Load(path, _warnings.Add);
+
+            Assert.Empty(_warnings);
+            var face = loaded.Resolve(PartGroup.Face);
+            Assert.False(face.faceHalfShadow);
+            Assert.Equal(50f, face.faceHalfAngle);
+            Assert.Equal(120f, face.faceFullAngle);
+            Assert.Equal(0f, face.faceHalfFadeWidth);
+            Assert.Equal(0.012f, face.faceHalfSoftness);
+            Assert.Equal(90f, face.faceFrontAngle);
+            Assert.Equal(0.3f, face.faceFrontShadowStrength);
+            Assert.True(loaded.Resolve(PartGroup.Skin).faceHalfShadow);
+        }
+
+        [Fact]
+        public void 半面切り替えの影の要素が無いファイルは既定で読む()
+        {
+            var path = Path.Combine(_dir, "old-facehalf.xml");
+            MaidSettingsStore.Save(path, Filled());
+            var xml = File.ReadAllText(path);
+            xml = System.Text.RegularExpressions.Regex.Replace(xml, @"\s*<(faceHalf\w*|faceFullAngle|faceFront\w*)>[^<]*</\1>", "");
+            Assert.DoesNotContain("faceHalf", xml);
+            Assert.DoesNotContain("faceFullAngle", xml);
+            Assert.DoesNotContain("faceFront", xml);
+            File.WriteAllText(path, xml);
+
+            var loaded = MaidSettingsStore.Load(path, _warnings.Add);
+
+            Assert.Empty(_warnings);
+            var face = loaded.Resolve(PartGroup.Face);
+            Assert.True(face.faceHalfShadow);
+            Assert.Equal(80f, face.faceHalfAngle);
+            Assert.Equal(110f, face.faceFullAngle);
+            Assert.Equal(50f, face.faceHalfFadeWidth);
+            Assert.Equal(0.005f, face.faceHalfSoftness);
+            Assert.Equal(60f, face.faceFrontAngle);
+            Assert.Equal(1f, face.faceFrontShadowStrength);
         }
 
         [Fact]
@@ -261,10 +371,21 @@ namespace COM3D2.MToonMaid.Plugin.Tests
 
             Assert.Equal(new[] { GroupSettingKeys.ShadingToony }, s.skin.overrides);
             Assert.Equal(0.8f, s.Resolve(PartGroup.Skin).shadingToony);
-            Assert.Equal(new[] { GroupSettingKeys.FlatShadowRamp }, s.face.overrides);
+            Assert.Equal(new[] { GroupSettingKeys.FlatShadowRamp, GroupSettingKeys.ShadeStrength }, s.face.overrides);
             Assert.Empty(s.hair.overrides);
             Assert.Empty(s.costume.overrides);
             Assert.Equal(GroupSettings.CreateDefault().shadingToony, s.Resolve(PartGroup.Face).shadingToony);
+        }
+
+        [Fact]
+        public void 新しいメイドは顔だけ陰影の濃さを個別に0_8にする()
+        {
+            var s = Filled();
+
+            Assert.Equal(0.8f, s.Resolve(PartGroup.Face).shadeStrength);
+            Assert.Equal(GroupSettings.CreateDefault().shadeStrength, s.Resolve(PartGroup.Skin).shadeStrength);
+            Assert.Equal(GroupSettings.CreateDefault().shadeStrength, s.Resolve(PartGroup.Hair).shadeStrength);
+            Assert.Equal(GroupSettings.CreateDefault().shadeStrength, s.Resolve(PartGroup.Costume).shadeStrength);
         }
 
         [Fact]
@@ -436,7 +557,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.DoesNotContain("hairShadowYaw", GroupSettingKeys.All);
             Assert.Contains(GroupSettingKeys.HairShadowResolution, GroupSettingKeys.All);
             Assert.Contains(GroupSettingKeys.HairShadowSoftness, GroupSettingKeys.All);
-            Assert.Equal(26, GroupSettingKeys.All.Length);
+            Assert.Equal(33, GroupSettingKeys.All.Length);
             var def = GroupSettings.CreateDefault();
             Assert.Equal(1f, def.hairShadow);
             Assert.Equal(HairShadowMode.Fixed, def.hairShadowMode);

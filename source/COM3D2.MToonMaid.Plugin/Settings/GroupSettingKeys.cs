@@ -33,6 +33,13 @@ namespace COM3D2.MToonMaid.Plugin
         public const string OutlineColor = "outlineColor";
         public const string ReceiveShadows = "receiveShadows";
         public const string CastShadows = "castShadows";
+        public const string FaceHalfShadow = "faceHalfShadow";
+        public const string FaceHalfAngle = "faceHalfAngle";
+        public const string FaceFullAngle = "faceFullAngle";
+        public const string FaceHalfFadeWidth = "faceHalfFadeWidth";
+        public const string FaceHalfSoftness = "faceHalfSoftness";
+        public const string FaceFrontAngle = "faceFrontAngle";
+        public const string FaceFrontShadowStrength = "faceFrontShadowStrength";
 
         public static readonly string[] All =
         {
@@ -42,6 +49,7 @@ namespace COM3D2.MToonMaid.Plugin
             RimColor, RimFresnelPowerScale, RimLiftOffset, RimLightingMix,
             OutlineEnabled, OutlineWidth, OutlineNearDistance, OutlineLightingMix, OutlineColor,
             ReceiveShadows, CastShadows,
+            FaceHalfShadow, FaceHalfAngle, FaceFullAngle, FaceHalfFadeWidth, FaceHalfSoftness, FaceFrontAngle, FaceFrontShadowStrength,
         };
 
         /// <summary>
@@ -59,6 +67,13 @@ namespace COM3D2.MToonMaid.Plugin
                 case HairShadowOffsetY:
                 case HairShadowResolution:
                 case HairShadowSoftness:
+                case FaceHalfShadow:
+                case FaceHalfAngle:
+                case FaceFullAngle:
+                case FaceHalfFadeWidth:
+                case FaceHalfSoftness:
+                case FaceFrontAngle:
+                case FaceFrontShadowStrength:
                 case HighlightScale:
                     return true;
                 default:
@@ -81,6 +96,14 @@ namespace COM3D2.MToonMaid.Plugin
                 case HairShadowResolution:
                 case HairShadowSoftness:
                     return ToonMaterialClassifier.UsesHairShadow(group);
+                case FaceHalfShadow:
+                case FaceHalfAngle:
+                case FaceFullAngle:
+                case FaceHalfFadeWidth:
+                case FaceHalfSoftness:
+                case FaceFrontAngle:
+                case FaceFrontShadowStrength:
+                    return ToonMaterialClassifier.UsesFaceHalfShadow(group);
                 case HighlightScale:
                     return ToonMaterialClassifier.UsesHighlightScale(group);
                 default:

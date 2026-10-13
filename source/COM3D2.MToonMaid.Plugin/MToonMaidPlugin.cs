@@ -40,6 +40,7 @@ namespace COM3D2.MToonMaid.Plugin
         // 前髪の影・瞳の視線の更新の例外は、それぞれ 1 回だけ知らせる
         private bool _hairShadowWarned;
         private bool _eyeGazeWarned;
+        private bool _faceHalfShadowWarned;
         private bool _shaderLoadPending;
         private MaidSettingsStore _store;
         private PresetStore<EyePreset> _eyePresets;
@@ -189,7 +190,7 @@ namespace COM3D2.MToonMaid.Plugin
         }
 
         /// <summary>
-        /// 揺れもの (前髪の物理) と目の動きが LateUpdate で決まった後に描くため、カメラの描画の直前に前髪の影と瞳の視線を更新する。
+        /// 揺れもの (前髪の物理) と目の動きが LateUpdate で決まった後に描くため、カメラの描画の直前に前髪の影・顔の半面切り替えの影・瞳の視線を更新する。
         /// カメラが複数あってもフレームに 1 回にする
         /// </summary>
         private void OnCameraPreCull(Camera camera)
@@ -206,11 +207,12 @@ namespace COM3D2.MToonMaid.Plugin
                 {
                     continue;
                 }
+                var face = _store.Get(pair.Value.Guid).Resolve(PartGroup.Face);
                 // カメラのコールバックで例外を外へ出すと他の購読者が呼ばれず、毎フレーム全カメラでログが出る
                 // 同じ try にすると、片方の例外でもう片方が止まり、警告も片方しか出ない
                 try
                 {
-                    pair.Value.RenderHairShadow(_store.Get(pair.Value.Guid).Resolve(PartGroup.Face));
+                    pair.Value.RenderHairShadow(face);
                 }
                 catch (System.Exception e)
                 {
@@ -218,6 +220,18 @@ namespace COM3D2.MToonMaid.Plugin
                     {
                         _hairShadowWarned = true;
                         Log.LogWarning("前髪の影の更新に失敗しました: " + e);
+                    }
+                }
+                try
+                {
+                    pair.Value.UpdateFaceHalfShadow(face);
+                }
+                catch (System.Exception e)
+                {
+                    if (!_faceHalfShadowWarned)
+                    {
+                        _faceHalfShadowWarned = true;
+                        Log.LogWarning("顔の半面切り替えの影の更新に失敗しました: " + e);
                     }
                 }
                 try

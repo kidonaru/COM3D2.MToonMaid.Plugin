@@ -61,6 +61,19 @@ namespace COM3D2.MToonMaid.Plugin
         public const string HairShadowMatrix = "_HairShadowMatrix";
         public const string HairShadowSoftness = "_HairShadowSoftness";
 
+        // 顔の半面切り替えの影 (顔の MToon が読む)。中心・正面・頭の上はプラグインが毎フレーム入れる
+        public const string FaceHalfShadow = "_FaceHalfShadow";
+        public const string FaceHalfAngle = "_FaceHalfAngle";
+        public const string FaceFullAngle = "_FaceFullAngle";
+        public const string FaceHalfFadeWidth = "_FaceHalfFadeWidth";
+        public const string FaceFullFadeWidth = "_FaceFullFadeWidth";
+        public const string FaceHalfSoftness = "_FaceHalfSoftness";
+        public const string FaceFrontAngle = "_FaceFrontAngle";
+        public const string FaceFrontShadowStrength = "_FaceFrontShadowStrength";
+        public const string FaceHalfCenter = "_FaceHalfCenter";
+        public const string FaceHalfForward = "_FaceHalfForward";
+        public const string FaceHalfUp = "_FaceHalfUp";
+
         // 前髪の深度を書くシェーダーと、そのグローバル値 (ゲームのグローバルと衝突しない専用名)
         public const string HairShadowCasterShaderName = "Hidden/COM3D2/MToonHairShadowCaster";
         public const string CasterTex = "_MToonHairShadowCasterTex";

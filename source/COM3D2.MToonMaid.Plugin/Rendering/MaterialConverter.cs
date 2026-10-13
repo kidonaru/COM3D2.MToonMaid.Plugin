@@ -114,6 +114,14 @@ namespace COM3D2.MToonMaid.Plugin
             m.SetColor(MToonProps.ShadeColor, ToColor(settings.shadeColor) * ToColor(rampShade));
             m.SetColor(MToonProps.ToonRampDarkColor, ToColor(backup.ramp.Dark));
             m.SetFloat(MToonProps.FlatShadowRamp, settings.flatShadowRamp ? 1f : 0f);
+            m.SetFloat(MToonProps.FaceHalfShadow, FaceHalfShadowParams.Enabled(settings.faceHalfShadow, backup.group) ? 1f : 0f);
+            m.SetFloat(MToonProps.FaceHalfAngle, FaceHalfShadowParams.HalfAngle(settings.faceHalfAngle));
+            m.SetFloat(MToonProps.FaceFullAngle, FaceHalfShadowParams.FullAngle(settings.faceHalfAngle, settings.faceFullAngle));
+            m.SetFloat(MToonProps.FaceHalfFadeWidth, FaceHalfShadowParams.HalfFadeWidth(settings.faceHalfAngle, settings.faceHalfFadeWidth));
+            m.SetFloat(MToonProps.FaceFullFadeWidth, FaceHalfShadowParams.FullFadeWidth(settings.faceHalfAngle, settings.faceFullAngle, settings.faceHalfFadeWidth));
+            m.SetFloat(MToonProps.FaceHalfSoftness, FaceHalfShadowParams.Softness(settings.faceHalfSoftness));
+            m.SetFloat(MToonProps.FaceFrontAngle, FaceHalfShadowParams.FrontAngle(settings.faceFrontAngle));
+            m.SetFloat(MToonProps.FaceFrontShadowStrength, FaceHalfShadowParams.FrontShadowStrength(settings.faceFrontShadowStrength));
             m.SetFloat(MToonProps.GiEqualization, settings.giEqualization);
             // 加算パスの係数のため、手編集の範囲外の値で他のライトの寄与を削らないよう抑える
             m.SetFloat(MToonProps.AdditionalLightShade, Mathf.Clamp01(settings.additionalLightShade));

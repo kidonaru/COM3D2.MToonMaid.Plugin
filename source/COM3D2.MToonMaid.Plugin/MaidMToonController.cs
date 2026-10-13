@@ -47,6 +47,11 @@ namespace COM3D2.MToonMaid.Plugin
         private readonly List<TBodySkin> _skinBuffer = new List<TBodySkin>();
         private readonly FaceShadowApplier _faceShadow = new FaceShadowApplier();
         private readonly List<Renderer> _headRenderers = new List<Renderer>();
+        private static readonly int FaceHalfCenterId = Shader.PropertyToID(MToonProps.FaceHalfCenter);
+        private static readonly int FaceHalfForwardId = Shader.PropertyToID(MToonProps.FaceHalfForward);
+        private static readonly int FaceHalfUpId = Shader.PropertyToID(MToonProps.FaceHalfUp);
+        // 顔へ頭の向きを入れたか。OFF にしたとき 1 回だけ 0 に戻すため (毎フレーム全マテリアルへ 0 を書かない)
+        private bool _faceHalfWritten;
 
         private bool _wasBusy = true;
         private int _framesSinceScan;
@@ -277,6 +282,47 @@ namespace COM3D2.MToonMaid.Plugin
             _eyeGloss?.Forget();
             _sclera.Forget();
             _entries.Clear();
+        }
+
+        /// <summary>
+        /// カメラの描画の前に呼ぶ (フレームに 1 回)。半面切り替えの影が ON の間、顔へ頭の中心と向きを入れる。
+        /// OFF や頭が無いときは向きを 0 にし、シェーダーを N·L の影へ戻す
+        /// </summary>
+        public void UpdateFaceHalfShadow(GroupSettings face)
+        {
+            var body = Maid.body0;
+            var head = body != null ? body.trsHead : null;
+            var headRenderer = face.faceHalfShadow ? HeadFrame.FindHeadRenderer(body) : null;
+            if (head == null || headRenderer == null)
+            {
+                ClearFaceHalfShadow();
+                return;
+            }
+            CollectFaceMaterials();
+            var center = HeadFrame.Center(headRenderer);
+            var forward = HeadFrame.FaceForward(head);
+            var up = HeadFrame.HeadTop(head);
+            foreach (var m in _faceMaterials)
+            {
+                m.SetVector(FaceHalfCenterId, center);
+                m.SetVector(FaceHalfForwardId, forward);
+                m.SetVector(FaceHalfUpId, up);
+            }
+            _faceHalfWritten = true;
+        }
+
+        private void ClearFaceHalfShadow()
+        {
+            if (!_faceHalfWritten)
+            {
+                return;
+            }
+            CollectFaceMaterials();
+            foreach (var m in _faceMaterials)
+            {
+                m.SetVector(FaceHalfForwardId, Vector4.zero);
+            }
+            _faceHalfWritten = false;
         }
 
         /// <summary>

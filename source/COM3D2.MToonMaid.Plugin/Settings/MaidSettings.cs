@@ -8,8 +8,10 @@ namespace COM3D2.MToonMaid.Plugin
     [XmlRoot("MToonMaid")]
     public class MaidSettings
     {
-        public const int CurrentVersion = 1;
+        public const int CurrentVersion = 2;
         private const float SkinShadingToony = 0.8f;
+        private const float FaceShadeStrength = 0.8f;
+        private const int FaceShadeStrengthVersion = 2;
 
         [XmlAttribute] public int version = CurrentVersion;
         public bool enabled;
@@ -89,7 +91,7 @@ namespace COM3D2.MToonMaid.Plugin
             }
         }
 
-        // 肌の鋭さ・顔の影側の一色を GroupSettings のフィールド初期値にすると、共通の既定が変わって他のグループにも効く
+        // 肌の鋭さ・顔の影側の一色・顔の陰影の濃さを GroupSettings のフィールド初期値にすると、共通の既定が変わって他のグループにも効く
         internal static GroupSettings CreateGroupDefault(PartGroup group)
         {
             var g = GroupSettings.CreateDefault();
@@ -102,8 +104,22 @@ namespace COM3D2.MToonMaid.Plugin
             {
                 g.flatShadowRamp = true;
                 g.overrides.Add(GroupSettingKeys.FlatShadowRamp);
+                g.shadeStrength = FaceShadeStrength;
+                g.overrides.Add(GroupSettingKeys.ShadeStrength);
             }
             return g;
+        }
+
+        /// <summary>読み込んだ直後、FillMissing の後に呼ぶ</summary>
+        internal void Upgrade()
+        {
+            // 個別にした値まで 0.8 にすると、ユーザーが選んだ顔の濃さが消える
+            if (version < FaceShadeStrengthVersion && !face.IsOverridden(GroupSettingKeys.ShadeStrength))
+            {
+                face.shadeStrength = FaceShadeStrength;
+                face.overrides.Add(GroupSettingKeys.ShadeStrength);
+            }
+            version = CurrentVersion;
         }
 
         /// <summary>

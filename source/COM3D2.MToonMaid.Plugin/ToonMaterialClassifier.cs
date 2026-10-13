@@ -86,6 +86,12 @@ namespace COM3D2.MToonMaid.Plugin
             return group == PartGroup.Face;
         }
 
+        /// <summary>半面切り替えの影を出すグループ。頭の中心と正面で影を決めるため顔だけ</summary>
+        public static bool UsesFaceHalfShadow(PartGroup group)
+        {
+            return group == PartGroup.Face;
+        }
+
         /// <summary>
         /// 天使の輪の強さを調整に出すグループ。髪のシェーダーは髪スロットのほか、帽子や髪付きのアクセ (衣装) にも使われる
         /// </summary>
