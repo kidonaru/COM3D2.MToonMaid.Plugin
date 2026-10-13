@@ -251,9 +251,13 @@ namespace COM3D2.MToonMaid.Plugin
             }
 
             _settings = _host.GetSettings(maid);
-            view.DrawToggle("MToon にする", _settings.enabled, -1, RowHeight, v => _enabledRequest = v,
+            view.BeginHorizontal();
+            // 幅を -1 にすると、トグルが行の残り幅を全部取ってラベルが行の外へ押し出される
+            const string enabledLabel = "MToon にする";
+            view.DrawToggle(enabledLabel, _settings.enabled, GUIView.CalcWidthCached(GUIView.gsToggle, enabledLabel), RowHeight, v => _enabledRequest = v,
                 "このメイドのマテリアルを MToon のシェーダーに置き換える\nOFF で元のシェーダーへ戻す");
-            view.DrawLabel("変換済みマテリアル: " + _host.GetConvertedCount(maid), -1, RowHeight);
+            view.DrawLabel("変換済みマテリアル: " + _host.GetConvertedCount(maid), -1, RowHeight, style: GUIView.gsLabelRight);
+            view.EndLayout();
             view.DrawHorizontalLine();
 
             _tab = DrawWrappedTabs(view, TabLabels, _tabWidths, _tabWrapsBefore, _tab);
