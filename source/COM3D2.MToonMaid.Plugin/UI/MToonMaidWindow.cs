@@ -552,9 +552,9 @@ namespace COM3D2.MToonMaid.Plugin
                 }
                 return;
             }
-            if (view.DrawButton("このグループを全て共通に戻す", ResetButtonWidth, RowHeight))
+            if (view.DrawButton("このグループをリセット", ResetButtonWidth, RowHeight))
             {
-                _settings.ClearOverrides(_editGroup.Value);
+                _settings.ResetGroup(_editGroup.Value);
                 _groupChanged = true;
             }
         }

@@ -164,9 +164,10 @@ namespace COM3D2.MToonMaid.Plugin
             return GroupSettingKeys.IsGroupOnly(key) ? Defaults : common;
         }
 
-        public void ClearOverrides(PartGroup group)
+        // 個別を外すだけにすると、部位の既定で個別にしている項目 (顔の陰影の濃さ・肌の境界の硬さ) まで共通の値へ変わる
+        public void ResetGroup(PartGroup group)
         {
-            Get(group).overrides.Clear();
+            Set(group, CreateGroupDefault(group));
         }
 
         /// <summary>共通と各グループをプリセットの実体に差し替える。preset は FillMissing 済みで、ほかと共有しないこと</summary>

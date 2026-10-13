@@ -392,15 +392,33 @@ namespace COM3D2.MToonMaid.Plugin.Tests
         }
 
         [Fact]
-        public void 共通に戻すと全項目の個別が外れる()
+        public void グループをリセットすると個別が外れ部位専用の項目も既定に戻る()
         {
             var s = Filled();
             s.SetOverride(PartGroup.Hair, GroupSettingKeys.ShadingShift, true);
             s.SetOverride(PartGroup.Hair, GroupSettingKeys.OutlineColor, true);
+            s.hair.hairShadow = 0.1f;
 
-            s.ClearOverrides(PartGroup.Hair);
+            s.ResetGroup(PartGroup.Hair);
 
             Assert.Empty(s.hair.overrides);
+            Assert.Equal(GroupSettings.CreateDefault().hairShadow, s.hair.hairShadow);
+        }
+
+        [Fact]
+        public void グループをリセットすると顔の陰影の濃さと肌の境界の硬さは部位の既定の個別に戻る()
+        {
+            var s = Filled();
+            s.SetOverride(PartGroup.Face, GroupSettingKeys.ShadeStrength, false);
+            s.SetOverride(PartGroup.Skin, GroupSettingKeys.ShadingToony, false);
+
+            s.ResetGroup(PartGroup.Face);
+            s.ResetGroup(PartGroup.Skin);
+
+            Assert.True(s.face.IsOverridden(GroupSettingKeys.ShadeStrength));
+            Assert.Equal(0.8f, s.Resolve(PartGroup.Face).shadeStrength);
+            Assert.True(s.skin.IsOverridden(GroupSettingKeys.ShadingToony));
+            Assert.Equal(0.8f, s.Resolve(PartGroup.Skin).shadingToony);
         }
 
         [Fact]
@@ -611,7 +629,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             s.hair.highlightScale = 0.3f;
             Assert.Equal(0.3f, s.Resolve(PartGroup.Hair).highlightScale);
 
-            s.ClearOverrides(PartGroup.Hair);
+            s.SetOverride(PartGroup.Hair, GroupSettingKeys.HighlightScale, false);
             Assert.Equal(1f, s.Resolve(PartGroup.Hair).highlightScale);
         }
 
