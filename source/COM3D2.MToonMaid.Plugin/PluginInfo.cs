@@ -8,6 +8,6 @@ namespace COM3D2.MToonMaid.Plugin
     {
         public const string PluginName = "MToonMaid";
         public const string PluginFullName = "COM3D2." + PluginName + ".Plugin";
-        public const string PluginVersion = "1.1.0.0";
+        public const string PluginVersion = "1.1.1.0";
     }
 }
