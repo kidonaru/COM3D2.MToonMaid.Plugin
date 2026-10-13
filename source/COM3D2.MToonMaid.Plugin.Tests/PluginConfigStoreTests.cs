@@ -74,6 +74,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.Equal("Ctrl+Shift+M", config.toggleWindow);
             Assert.Equal(-1, config.windowX);
             Assert.Equal(0, config.windowWidth);
+            Assert.Equal(1f, config.uiScale);
             Assert.Empty(_warnings);
         }
 

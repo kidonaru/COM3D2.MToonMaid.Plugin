@@ -15,6 +15,7 @@ namespace COM3D2.MToonMaid.Plugin
 
         private readonly IMToonMaidHost _host;
         private readonly WindowPlacementConfig _placement;
+        private readonly PluginConfig _config;
         private bool _isCameraControlDisabled;
         private bool _isUIInputDisabled;
         private bool _isGizmoLocked;
@@ -23,10 +24,11 @@ namespace COM3D2.MToonMaid.Plugin
 
         public MToonMaidWindow MainWindow { get; private set; }
 
-        public WindowManager(IMToonMaidHost host, WindowPlacementConfig placement)
+        public WindowManager(IMToonMaidHost host, WindowPlacementConfig placement, PluginConfig config)
         {
             _host = host;
             _placement = placement;
+            _config = config;
         }
 
         public override void Init()
@@ -43,6 +45,13 @@ namespace COM3D2.MToonMaid.Plugin
             AddWindow(ComboBoxPopupWindow.instance);
             // モーダルダイアログは最前面へ出すため最後に登録する
             AddWindow(DialogPopupWindow.instance);
+        }
+
+        public override void Update()
+        {
+            // OnAfterUpdate で入れると、窓の Update が倍率の変化を拾うのが次のフレームになり、1 フレーム古いレイアウトで描く
+            GUIScale.scale = UIScaleClient.Resolve(_config.uiScale);
+            base.Update();
         }
 
         protected override void OnAfterUpdate()

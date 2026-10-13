@@ -54,6 +54,7 @@
     <Compile Include="..\..\MTEUtils\TabBarLayout.cs" Link="MTEUtils\TabBarLayout.cs" />
     <Compile Include="..\..\MTEUtils\TooltipDrawer.cs" Link="MTEUtils\TooltipDrawer.cs" />
     <Compile Include="..\..\MTEUtils\TransformCache.cs" Link="MTEUtils\TransformCache.cs" />
+    <Compile Include="..\..\MTEUtils\UIScaleClient.cs" Link="MTEUtils\UIScaleClient.cs" />
     <Compile Include="..\..\MTEUtils\WindowManagerBase.cs" Link="MTEUtils\WindowManagerBase.cs" />
     <Compile Include="..\..\MTEUtils\WindowResizeController.cs" Link="MTEUtils\WindowResizeController.cs" />
     <EmbeddedResource Include="$(ShaderBundle)" LogicalName="mtoon_bundle" Condition="Exists('$(ShaderBundle)')" />

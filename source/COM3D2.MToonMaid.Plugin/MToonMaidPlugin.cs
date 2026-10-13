@@ -122,7 +122,8 @@ namespace COM3D2.MToonMaid.Plugin
             try
             {
                 var manager = new WindowManager(this,
-                    new WindowPlacementConfig(_config, MToonMaidWindow.DefaultWidth, MToonMaidWindow.DefaultHeight));
+                    new WindowPlacementConfig(_config, MToonMaidWindow.DefaultWidth, MToonMaidWindow.DefaultHeight),
+                    _config.Config);
                 manager.Init();
                 _windowManager = manager;
                 return true;

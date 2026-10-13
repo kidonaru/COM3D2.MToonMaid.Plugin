@@ -92,7 +92,7 @@ zip を解凍し、ゲームに合わせて次のフォルダの中身を、ゲ�
 
 単体で動作します。
 
-SceneEditor を導入している場合、ウィンドウは SceneEditor のドッキングに参加します。
+SceneEditor を導入している場合、ウィンドウは SceneEditor のドッキングに参加し、SceneEditor の UI 倍率に合わせて拡大されます。
 
 前髪の影の濃さは平行光の落ち影の濃さに連動するため、ライトの影の濃さを変えられるプラグイン（SceneEditor など）があると調整しやすくなります。
 
@@ -431,6 +431,7 @@ SceneEditor を導入している場合、ウィンドウは SceneEditor のド�
 |---|---|---|
 | `toggleWindow` | `Ctrl+Shift+M` | ウィンドウの開閉キー |
 | `scanInterval` | 10 | マテリアルを走査する間隔（フレーム）。小さいほど着替え直後の追従が速く、負荷が増える |
+| `uiScale` | 1 | ウィンドウの表示倍率（0.5〜3）。UI 倍率に対応した SceneEditor を導入している場合はその倍率に従い、この値は使わない |
 
 エラーや警告は`[MToonMaid]`を付けて、`BepInEx/LogOutput.log`に出ます。そこに無い場合（COM3D2 (2.0) の環境によっては）`COM3D2x64_Data/output_log.txt`に出ます。
 
