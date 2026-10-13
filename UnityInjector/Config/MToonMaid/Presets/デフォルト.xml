@@ -84,7 +84,7 @@
     <shadingToony>0.95</shadingToony>
     <giEqualization>0.9</giEqualization>
     <additionalLightShade>0.5</additionalLightShade>
-    <flatShadowRamp>true</flatShadowRamp>
+    <flatShadowRamp>false</flatShadowRamp>
     <hairShadow>1</hairShadow>
     <hairShadowMode>Fixed</hairShadowMode>
     <hairShadowOffsetX>0.004</hairShadowOffsetX>
@@ -114,7 +114,6 @@
     <outlineColor r="0" g="0" b="0" a="1" />
     <overrides>
       <string>hairShadowOffsetX</string>
-      <string>flatShadowRamp</string>
       <string>shadeStrength</string>
     </overrides>
   </face>

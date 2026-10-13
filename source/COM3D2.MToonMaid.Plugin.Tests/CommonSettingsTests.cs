@@ -105,12 +105,12 @@ namespace COM3D2.MToonMaid.Plugin.Tests
         }
 
         [Fact]
-        public void 新しいメイドは顔だけ影側を一色にする()
+        public void 新しいメイドはどの部位も影側を一色にしない()
         {
             var s = Filled();
 
-            Assert.Contains(GroupSettingKeys.FlatShadowRamp, s.face.overrides);
-            Assert.True(s.Resolve(PartGroup.Face).flatShadowRamp);
+            Assert.DoesNotContain(GroupSettingKeys.FlatShadowRamp, s.face.overrides);
+            Assert.False(s.Resolve(PartGroup.Face).flatShadowRamp);
             Assert.False(s.Resolve(PartGroup.Skin).flatShadowRamp);
             Assert.False(s.Resolve(PartGroup.Hair).flatShadowRamp);
             Assert.False(s.Resolve(PartGroup.Costume).flatShadowRamp);
@@ -120,7 +120,10 @@ namespace COM3D2.MToonMaid.Plugin.Tests
         public void 影側を一色にの要素が無いファイルはOFFで読む()
         {
             var path = Path.Combine(_dir, "old.xml");
-            MaidSettingsStore.Save(path, Filled());
+            var s = Filled();
+            s.SetOverride(PartGroup.Face, GroupSettingKeys.FlatShadowRamp, true);
+            s.face.flatShadowRamp = true;
+            MaidSettingsStore.Save(path, s);
             var xml = File.ReadAllText(path);
             xml = System.Text.RegularExpressions.Regex.Replace(xml, @"\s*<flatShadowRamp>\w+</flatShadowRamp>", "")
                 .Replace("<string>flatShadowRamp</string>", "");
@@ -371,7 +374,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
 
             Assert.Equal(new[] { GroupSettingKeys.ShadingToony }, s.skin.overrides);
             Assert.Equal(0.8f, s.Resolve(PartGroup.Skin).shadingToony);
-            Assert.Equal(new[] { GroupSettingKeys.FlatShadowRamp, GroupSettingKeys.ShadeStrength }, s.face.overrides);
+            Assert.Equal(new[] { GroupSettingKeys.ShadeStrength }, s.face.overrides);
             Assert.Empty(s.hair.overrides);
             Assert.Empty(s.costume.overrides);
             Assert.Equal(GroupSettings.CreateDefault().shadingToony, s.Resolve(PartGroup.Face).shadingToony);
