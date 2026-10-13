@@ -454,12 +454,6 @@ SceneEditor を導入している場合、ウィンドウは SceneEditor のド�
 ## 変更履歴
 
 ### 2026/10/13 v1.1.0.0
-- BepInExプラグインからUnityInjectorプラグインに変更
-  - `Sybaris\UnityInjector`に配置するようになりました
-  - 前のバージョンの`BepInEx\plugins\COM3D2.MToonMaid.dll`は削除してください
-  - 設定の保存先が`Sybaris\UnityInjector\Config\MToonMaid\`になりました
-  - 前のバージョンの設定(`BepInEx\config\COM3D2.MToonMaid\`)は読み込みません。引き継ぐ場合は中身を新しい保存先へコピーしてください
-  - 開閉キーは`Sybaris\UnityInjector\Config\MToonMaid.xml`の`toggleWindow`で変更するようになりました
 - 顔タブに半面切り替えの影を追加
   - 顔の影を光の水平方向の角度で、影なし/半面/全面に切り替えるようになりました
   - 半面/全面になる角度、フェード幅、境目のぼかしを調整できます
