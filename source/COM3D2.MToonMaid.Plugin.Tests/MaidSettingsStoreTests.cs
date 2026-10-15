@@ -117,6 +117,24 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.Equal(GroupSettings.CreateDefault().shadeStrength, s.Resolve(PartGroup.Face).shadeStrength);
         }
 
+        [Theory]
+        [InlineData(2, 1f, 1.5f)]
+        [InlineData(1, 1f, 1.5f)]
+        [InlineData(2, 0.6f, 0.6f)]
+        [InlineData(3, 1f, 1f)]
+        public void 版3より前で前髪の影の強さを個別の1にしていれば新しい既定の1_5にする(int version, float hairShadow, float expected)
+        {
+            var path = Path.Combine(_dir, "hairshadow-v" + version + "-" + hairShadow + ".xml");
+            File.WriteAllText(path,
+                "<?xml version=\"1.0\"?><MToonMaid version=\"" + version + "\"><enabled>true</enabled>" +
+                "<face><hairShadow>" + hairShadow.ToString(System.Globalization.CultureInfo.InvariantCulture) + "</hairShadow>" +
+                "<overrides><string>hairShadow</string></overrides></face></MToonMaid>");
+
+            var s = MaidSettingsStore.Load(path, _warnings.Add);
+
+            Assert.Equal(expected, s.Resolve(PartGroup.Face).hairShadow);
+        }
+
         [Fact]
         public void 壊れたファイルはbakへ退避してOFF()
         {

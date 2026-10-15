@@ -8,10 +8,12 @@ namespace COM3D2.MToonMaid.Plugin
     [XmlRoot("MToonMaid")]
     public class MaidSettings
     {
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 3;
         private const float SkinShadingToony = 0.8f;
         private const float FaceShadeStrength = 0.8f;
         private const int FaceShadeStrengthVersion = 2;
+        private const int HairShadowDefaultVersion = 3;
+        private const float OldHairShadowDefault = 1f;
 
         [XmlAttribute] public int version = CurrentVersion;
         public bool enabled;
@@ -116,6 +118,11 @@ namespace COM3D2.MToonMaid.Plugin
             {
                 face.shadeStrength = FaceShadeStrength;
                 face.overrides.Add(GroupSettingKeys.ShadeStrength);
+            }
+            // 1 以外まで既定へ寄せると、ユーザーが選んだ前髪の影の濃さが消える
+            if (version < HairShadowDefaultVersion && face.IsOverridden(GroupSettingKeys.HairShadow) && face.hairShadow == OldHairShadowDefault)
+            {
+                face.hairShadow = GroupSettings.CreateDefault().hairShadow;
             }
             version = CurrentVersion;
         }

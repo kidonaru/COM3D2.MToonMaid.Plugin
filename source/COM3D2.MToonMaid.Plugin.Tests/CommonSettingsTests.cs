@@ -568,7 +568,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
         }
 
         [Fact]
-        public void 前髪の影は既定で濃さ1固定右へ4mmずらし()
+        public void 前髪の影は既定で濃さ1_5固定右へ4mmずらし()
         {
             Assert.Contains(GroupSettingKeys.HairShadow, GroupSettingKeys.All);
             Assert.Contains(GroupSettingKeys.HairShadowMode, GroupSettingKeys.All);
@@ -580,7 +580,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.Contains(GroupSettingKeys.HairShadowSoftness, GroupSettingKeys.All);
             Assert.Equal(33, GroupSettingKeys.All.Length);
             var def = GroupSettings.CreateDefault();
-            Assert.Equal(1f, def.hairShadow);
+            Assert.Equal(1.5f, def.hairShadow);
             Assert.Equal(HairShadowMode.Fixed, def.hairShadowMode);
             Assert.Equal(0.004f, def.hairShadowOffsetX);
             Assert.Equal(0.02f, GroupSettings.MaxHairShadowOffset);

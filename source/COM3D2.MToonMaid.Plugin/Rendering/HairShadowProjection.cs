@@ -88,16 +88,16 @@ namespace COM3D2.MToonMaid.Plugin
             return strength > 0f && casterAvailable && !waitingRetry;
         }
 
-        /// <summary>顔へ入れる前髪の影の濃さ。主光源の落ち影 (Light.shadowStrength) と同じ濃さを 1 とした倍率で掛ける</summary>
+        /// <summary>顔へ入れる前髪の影の濃さ (0〜GroupSettings.MaxHairShadow)。主光源の落ち影 (Light.shadowStrength) と同じ濃さを 1 とした倍率で掛ける</summary>
         public static float LinkedStrength(float hairShadow, bool lightCastsShadows, float lightShadowStrength)
         {
-            return lightCastsShadows ? Clamp01(hairShadow) * Clamp01(lightShadowStrength) : 0f;
+            return lightCastsShadows ? ClampNanToZero(hairShadow, GroupSettings.MaxHairShadow) * ClampNanToZero(lightShadowStrength, 1f) : 0f;
         }
 
-        private static float Clamp01(float value)
+        private static float ClampNanToZero(float value, float max)
         {
             // Math.Min/Max だけだと、手で編集した設定ファイルの NaN がそのままシェーダーへ渡る
-            return float.IsNaN(value) ? 0f : Math.Min(Math.Max(value, 0f), 1f);
+            return float.IsNaN(value) ? 0f : Math.Min(Math.Max(value, 0f), max);
         }
 
         public static float[] Apply(float[] m, float[] p)

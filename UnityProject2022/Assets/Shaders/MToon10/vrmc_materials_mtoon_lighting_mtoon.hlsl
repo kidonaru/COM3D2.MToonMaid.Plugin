@@ -109,7 +109,7 @@ inline half SampleHairShadowPcf(const float2 uv, const float d)
     return lerp(lerp(s00, s10, f.x), lerp(s01, s11, f.x), f.y);
 }
 
-inline half GetMToonLighting_HairShadow(const MToonInput input)
+inline half GetMToonLighting_HairShadowCoverage(const MToonInput input)
 {
     if (_HairShadowStrength <= 0 || MToon_IsOutlinePass())
     {
@@ -127,7 +127,7 @@ inline half GetMToonLighting_HairShadow(const MToonInput input)
     const float d = p.z - (MTOON_HAIR_SHADOW_BIAS + _HairShadowSoftness * texel.x);
     if (_HairShadowSoftness <= 0)
     {
-        return SampleHairShadowPcf(p.xy, d) * _HairShadowStrength;
+        return SampleHairShadowPcf(p.xy, d);
     }
     // PCF 1 回だとぼかしの幅を 1 画素より広げられない。読む点の間隔を 1 画素より広げると、点の間に平らな帯ができて縁が二重に見える
     const int n = min((int)ceil(_HairShadowSoftness) + 1, 4);
@@ -143,7 +143,7 @@ inline half GetMToonLighting_HairShadow(const MToonInput input)
             s += SampleHairShadowPcf(start + float2(x, y) * spacing, d);
         }
     }
-    return s / (n * n) * _HairShadowStrength;
+    return s / (n * n);
 }
 
 // COM3D2: 陰影の濃さ 0 のときのランプの色 (u = 1)。影側の色 (_ToonRampDarkColor) の逆として固定の白にすると、
@@ -230,7 +230,8 @@ inline half3 GetMToonLighting_ToonRamp(const UnityLighting lighting, const MToon
     return max(0, lerp(GetMToonLighting_ToonRampLit(), lerp(_ToonRampDarkColor.rgb, ramp, unshadowed), shadeStrength));
 }
 
-inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInput input, const half dotNL, const half hairShadow, const half faceFrontWeight, const half faceLit)
+// COM3D2: ここで前髪の影まで掛けると、前髪の影の掛け増しを前髪が無ければ光側だった所に絞れない
+inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInput input, const half dotNL, const half faceFrontWeight, const half faceLit)
 {
     const half shadeShift = GetMToonLighting_Reflectance_ShadingShift(input);
     const half shadeToony = _ShadingToonyFactor;
@@ -249,7 +250,7 @@ inline half GetMToonLighting_Shade(const UnityLighting lighting, const MToonInpu
             ? GetMToonLighting_ShadowRate(dotNL)
             : mtoon_linearstep(-1.0 + shadeToony, +1.0 - shadeToony, shadeInput + shadeShift);
         const half toonShade = lerp(nlShade, faceLit, faceFrontWeight);
-        return toonShade * lighting.directLightAttenuation.x * (1 - hairShadow);
+        return toonShade * lighting.directLightAttenuation.x;
     }
     else
     {
@@ -381,7 +382,9 @@ inline half3 GetMToonLighting_Rim(const UnityLighting unityLight, const MToonInp
 half4 GetMToonLighting(const UnityLighting unityLight, const MToonInput input)
 {
     const half dotNL = GetMToonLighting_DotNL(unityLight, input);
-    const half hairShadow = MToon_IsForwardBasePass() ? GetMToonLighting_HairShadow(input) : 0;
+    const half hairCoverage = MToon_IsForwardBasePass() ? GetMToonLighting_HairShadowCoverage(input) : 0;
+    // 1 より上の強さを陰の割合に掛けると、ぼかした縁が細るだけで影の中は濃くならない
+    const half hairShadow = hairCoverage * min(_HairShadowStrength, 1);
     // COM3D2: 追加ライト (ForwardAdd) は N·L の影のまま
     const bool faceHalf = MToon_IsForwardBasePass() && MToon_IsFaceHalfShadowOn();
     // 三項演算子は両辺を評価するため、OFF の全 MToon の画素でも角度の計算が走る
@@ -392,10 +395,13 @@ half4 GetMToonLighting(const UnityLighting unityLight, const MToonInput input)
         faceFrontWeight = GetMToonLighting_FaceFrontWeight(input);
         faceLit = GetMToonLighting_FaceHalfLit(unityLight, input);
     }
+    const half litWithoutHair = GetMToonLighting_Shade(unityLight, input, dotNL, faceFrontWeight, faceLit);
+    // 陰の中まで掛け増すと、強さが 1 を超えたときだけ N·L の陰・落ち影・半面の影の中に前髪の形が浮く
+    const half hairDeepen = hairCoverage * max(_HairShadowStrength - 1, 0) * litWithoutHair;
     // COM3D2: 追加ライトの影側は _AdditionalLightShade で決めるため、陰影の濃さは ForwardBase だけに掛ける
-    const half shadeStrength = MToon_IsForwardBasePass() ? _ShadeStrength : 1;
+    const half shadeStrength = MToon_IsForwardBasePass() ? _ShadeStrength * (1 + hairDeepen) : 1;
     // 1 より上で陰影の割合を外挿すると、影が濃くならずに境界が光側へ広がる
-    const half shade = lerp(1, GetMToonLighting_Shade(unityLight, input, dotNL, hairShadow, faceFrontWeight, faceLit), min(shadeStrength, 1));
+    const half shade = lerp(1, litWithoutHair * (1 - hairShadow), min(shadeStrength, 1));
     const half shadeDepth = max(shadeStrength, 1);
     const half shadow = GetMToonLighting_Shadow(unityLight, dotNL, shade);
     // COM3D2: アウトラインのパスも ForwardBase なので、線に混ぜる陰影にもランプが掛かる (環境光・追加ライトには掛けない)

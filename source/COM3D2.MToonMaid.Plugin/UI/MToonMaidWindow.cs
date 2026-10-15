@@ -530,8 +530,8 @@ namespace COM3D2.MToonMaid.Plugin
             {
                 view.DrawLabel("前髪の影のシェーダーを読めないため使えません (ログを確認してください)", -1, RowHeight);
             }
-            Slider(view, GroupSettingKeys.HairShadow, "強さ", "前髪が顔へ落とす影の濃さ\n0 で影を作らない",
-                shown.hairShadow, 0f, 1f, def.hairShadow, (s, v) => s.hairShadow = v, editable: editable);
+            Slider(view, GroupSettingKeys.HairShadow, "強さ", "前髪が顔へ落とす影の濃さ\n0 で影を作らない\n1 より上では影の中だけ陰影の濃さを掛け増し、2 で影の中の陰影の濃さが 2 倍になる",
+                shown.hairShadow, 0f, GroupSettings.MaxHairShadow, def.hairShadow, (s, v) => s.hairShadow = v, editable: editable);
             Toggle(view, GroupSettingKeys.HairShadowMode, "ライトの向きに合わせる",
                 "主光源の向きから影を落とす\nOFF では頭の正面から落とし、ライトの向きによらない",
                 shown.hairShadowMode == HairShadowMode.Light, (s, v) => s.hairShadowMode = v ? HairShadowMode.Light : HairShadowMode.Fixed, editable);

@@ -23,8 +23,8 @@ namespace COM3D2.MToonMaid.Plugin
         public float additionalLightShade = 1f;
         // ゲームのランプを読むとき、主光源の影側 (_ShadowRateToon が 0 の側) をランプの最も暗い色一色で塗る
         public bool flatShadowRamp;
-        // 前髪 (hairF) が顔へ落とす影の濃さ (0〜1)。0 なら影マップを作らない。顔にだけ効く
-        public float hairShadow = 1f;
+        // 前髪 (hairF) が顔へ落とす影の濃さ (0〜MaxHairShadow)。0 なら影マップを作らない。1 より上は影の中を陰影の濃さより濃くする。顔にだけ効く
+        public float hairShadow = 1.5f;
         public HairShadowMode hairShadowMode = HairShadowMode.Fixed;
         // 影をずらす量 (m、±MaxHairShadowOffset)。X はメイドから見て右、Y は頭の上がプラス
         public float hairShadowOffsetX = 0.004f;
@@ -50,6 +50,7 @@ namespace COM3D2.MToonMaid.Plugin
         // 正面の範囲の半面・全面の影の濃さ。0 で消え、N·L の影・落ち影は変わらない
         public float faceFrontShadowStrength = 1f;
 
+        public const float MaxHairShadow = 2f;
         public const float MaxHairShadowOffset = 0.02f;
         public const float MaxHairShadowSoftness = 3f;
         public const float MaxShadeStrength = 2f;

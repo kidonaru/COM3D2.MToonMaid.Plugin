@@ -4,7 +4,7 @@
 // - Toony の _ToonRamp の光側の色を掛ける _ToonRampLitColor を追加
 // - Toony の髪のハイライト (天使の輪: _HiTex / _HiRate / _HiPow、倍率 _HiRateScale) を追加
 // - 追加ライト (ForwardAdd) の減衰を、光側は減衰だけ・影側は _AdditionalLightShade 倍の平らな明るさに変更
-// - プラグインが前髪だけを投影した深度 (_HairShadowTex / _HairShadowMatrix / _HairShadowStrength) で、ForwardBase の陰影に前髪の影を掛ける
+// - プラグインが前髪だけを投影した深度 (_HairShadowTex / _HairShadowMatrix / _HairShadowStrength) で、ForwardBase の陰影に前髪の影を掛ける。_HairShadowStrength が 1 より上の分は、前髪の影の中だけ _ShadeStrength を掛け増して影を濃くする
 // - _UseOutlineTex が 1 のとき、輪郭の色を _OutlineColor ではなくゲームの線用テクスチャ (_OutlineTex) から取る
 // - _UseShadowRateToon が 1 のとき、ForwardBase の陰影をゲームの _ShadowRateToon (Toony と同じ N·L の座標) で決める
 // - _UseToonRamp が 1 のとき、ゲームの _ToonRamp を _ShadowRateToon と同じ座標で読み、主光源の分とリムに掛ける。環境光にはランプの光側の色を掛けない
@@ -78,7 +78,7 @@ Shader "COM3D2/MToon10"
         _AdditionalLightShade ("Additional Light Shade", Range(0, 1)) = 1
         // COM3D2: 前髪の影 (プラグインが設定する。行列 _HairShadowMatrix は Properties に書けないため SetMatrix で入れる)
         _HairShadowTex ("Hair Shadow Depth", 2D) = "white" {}
-        _HairShadowStrength ("Hair Shadow Strength", Range(0, 1)) = 0
+        _HairShadowStrength ("Hair Shadow Strength", Range(0, 2)) = 0
         _HairShadowSoftness ("Hair Shadow Softness (texels)", Range(0, 3)) = 1
         // COM3D2: 顔の半面切り替えの影。角度・幅はラジアン、ぼかしは m (プラグインが設定する)
         _FaceHalfShadow ("Face Half Shadow", Float) = 0

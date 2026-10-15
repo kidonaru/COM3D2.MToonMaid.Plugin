@@ -85,7 +85,7 @@
     <giEqualization>0.9</giEqualization>
     <additionalLightShade>0.5</additionalLightShade>
     <flatShadowRamp>false</flatShadowRamp>
-    <hairShadow>1</hairShadow>
+    <hairShadow>1.5</hairShadow>
     <hairShadowMode>Fixed</hairShadowMode>
     <hairShadowOffsetX>0.004</hairShadowOffsetX>
     <hairShadowOffsetY>0</hairShadowOffsetY>
