@@ -52,6 +52,7 @@
     <scleraShadowHeight>0.3957529</scleraShadowHeight>
     <scleraShadowSoftness>0.15</scleraShadowSoftness>
     <scleraShadowBend>0.2</scleraShadowBend>
+    <scleraShadowRoll>0</scleraShadowRoll>
     <scleraLidFollow>0.2</scleraLidFollow>
   </eye>
   <color>

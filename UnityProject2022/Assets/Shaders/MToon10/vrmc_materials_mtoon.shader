@@ -69,6 +69,7 @@ Shader "COM3D2/MToon10"
         _ScleraShadowHeight ("Sclera Shadow Height", Range(0, 1)) = 0.5
         _ScleraShadowSoftness ("Sclera Shadow Softness", Range(0, 1)) = 0.15
         _ScleraShadowBend ("Sclera Shadow Bend", Range(0, 1)) = 0.2
+        _ScleraShadowRoll ("Sclera Shadow Roll", Range(-1, 1)) = 0
         _ScleraLidFollow ("Sclera Lid Follow", Range(0, 1)) = 0.2
         _LidClose ("Lid Close", Range(0, 1)) = 0
 

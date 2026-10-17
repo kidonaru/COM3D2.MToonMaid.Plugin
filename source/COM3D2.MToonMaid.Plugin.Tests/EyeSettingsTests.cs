@@ -251,6 +251,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.Equal(0.5f, s.eye.scleraShadowHeight);
             Assert.Equal(0.15f, s.eye.scleraShadowSoftness);
             Assert.Equal(0.2f, s.eye.scleraShadowBend);
+            Assert.Equal(0f, s.eye.scleraShadowRoll);
             Assert.Equal(0.2f, s.eye.scleraLidFollow);
             Assert.Empty(_warnings);
         }
@@ -271,6 +272,18 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.Equal(0f, s.eye.scleraLidFollow);
         }
 
+        [Theory]
+        [InlineData("3", 1f)]
+        [InlineData("-3", -1f)]
+        [InlineData("NaN", 0f)]
+        public void 白目の影のロールは範囲へ丸めNaNは0にする(string value, float expected)
+        {
+            var s = LoadXml("<?xml version=\"1.0\"?><MToonMaid version=\"1\"><eye>"
+                + "<scleraShadowRoll>" + value + "</scleraShadowRoll></eye></MToonMaid>");
+
+            Assert.Equal(expected, s.eye.scleraShadowRoll);
+        }
+
         [Fact]
         public void 白目の影を保存して読み直すと同じ値になる()
         {
@@ -285,6 +298,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             s.eye.scleraShadowHeight = 0.3f;
             s.eye.scleraShadowSoftness = 0.4f;
             s.eye.scleraShadowBend = 0.6f;
+            s.eye.scleraShadowRoll = -0.25f;
             s.eye.scleraLidFollow = 0.8f;
 
             MaidSettingsStore.Save(path, s);
@@ -298,6 +312,7 @@ namespace COM3D2.MToonMaid.Plugin.Tests
             Assert.Equal(0.3f, loaded.eye.scleraShadowHeight);
             Assert.Equal(0.4f, loaded.eye.scleraShadowSoftness);
             Assert.Equal(0.6f, loaded.eye.scleraShadowBend);
+            Assert.Equal(-0.25f, loaded.eye.scleraShadowRoll);
             Assert.Equal(0.8f, loaded.eye.scleraLidFollow);
             Assert.Empty(_warnings);
         }

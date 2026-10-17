@@ -78,6 +78,8 @@ namespace COM3D2.MToonMaid.Plugin
         public float scleraShadowSoftness = 0.15f;
         /// <summary>白目の左右の端ほど影の縁を下げる量 (白目の高さに対する割合)</summary>
         public float scleraShadowBend = 0.2f;
+        /// <summary>影の縁の傾き。白目の UV の u の大きい側 (バニラの顔では目尻) の縁をこの値だけ下げ、反対の端を同じだけ上げる (白目の高さに対する割合)</summary>
+        public float scleraShadowRoll;
         /// <summary>まぶたを閉じた割合 (0〜1) にこの値を掛けた分 (白目の高さに対する割合) だけ影を下へずらす</summary>
         public float scleraLidFollow = 0.2f;
 
@@ -159,6 +161,8 @@ namespace COM3D2.MToonMaid.Plugin
             scleraShadowHeight = Clamp01(scleraShadowHeight);
             scleraShadowSoftness = Clamp01(scleraShadowSoftness);
             scleraShadowBend = Clamp01(scleraShadowBend);
+            // 下限 (-1) に寄せると、壊れた値で影が最大まで傾く
+            scleraShadowRoll = float.IsNaN(scleraShadowRoll) ? 0f : Clamp(scleraShadowRoll, -1f, 1f);
             scleraLidFollow = Clamp01(scleraLidFollow);
             // 下限 (-1) に寄せると、壊れた値で視差が最大の逆向きになる
             parallax = float.IsNaN(parallax) ? 0f : Clamp(parallax, -MaxParallax, MaxParallax);

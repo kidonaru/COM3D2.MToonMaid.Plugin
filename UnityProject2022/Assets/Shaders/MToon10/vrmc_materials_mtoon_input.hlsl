@@ -72,6 +72,7 @@ half _ScleraShadow;
 half _ScleraShadowHeight;
 half _ScleraShadowSoftness;
 half _ScleraShadowBend;
+half _ScleraShadowRoll;
 half _ScleraLidFollow;
 half _LidClose;
 half _RimFresnelPower;

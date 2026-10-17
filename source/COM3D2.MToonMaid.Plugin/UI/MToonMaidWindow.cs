@@ -663,6 +663,8 @@ namespace COM3D2.MToonMaid.Plugin
                 eye.scleraShadowSoftness, 0f, 1f, def.scleraShadowSoftness, v => eye.scleraShadowSoftness = v, editable);
             EyeSlider(view, "反り", "白目の左右の端ほど影の下端を下げる量 (白目の高さに対する割合)",
                 eye.scleraShadowBend, 0f, 1f, def.scleraShadowBend, v => eye.scleraShadowBend = v, editable);
+            EyeSlider(view, "ロール", "影の下端を傾ける量 (白目の高さに対する割合)\nプラスで目尻側を下げ、目頭側を同じだけ上げる",
+                eye.scleraShadowRoll, -1f, 1f, def.scleraShadowRoll, v => eye.scleraShadowRoll = v, editable);
             EyeSlider(view, "まぶたへの追従", "まぶたを閉じるほど影を下へずらす割合",
                 eye.scleraLidFollow, 0f, 1f, def.scleraLidFollow, v => eye.scleraLidFollow = v, editable);
             EyeToggle(view, "白目の色を指定する", "白目の色を下の色にする\nOFF ではテクスチャの白目の白い部分の色",

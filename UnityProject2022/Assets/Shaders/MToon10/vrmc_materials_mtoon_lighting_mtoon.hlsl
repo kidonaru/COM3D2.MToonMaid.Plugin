@@ -41,7 +41,7 @@ inline bool MToon_GetScleraColor(const float2 uv, out half3 color)
         ? _ScleraColor.rgb
         : MTOON_SAMPLE_TEXTURE2D_LOD(_MainTex, _ScleraRect.xy + _ScleraRect.zw * float2(0.5, 0.1), 0).rgb;
     const float x = 2 * n.x - 1;
-    const half edge = 1 - _ScleraShadowHeight - _ScleraShadowBend * x * x - _LidClose * _ScleraLidFollow;
+    const half edge = 1 - _ScleraShadowHeight - _ScleraShadowBend * x * x - _ScleraShadowRoll * x - _LidClose * _ScleraLidFollow;
     const half mask = smoothstep(edge, edge + max(_ScleraShadowSoftness * _ScleraShadowHeight, 1e-4), n.y) * _ScleraShadow;
     color = lerp(base, base * _ScleraShadowColor.rgb, mask);
     return true;

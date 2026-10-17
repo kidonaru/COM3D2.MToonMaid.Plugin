@@ -117,6 +117,7 @@ namespace COM3D2.MToonMaid.Plugin
         public const string ScleraShadowHeight = "_ScleraShadowHeight";
         public const string ScleraShadowSoftness = "_ScleraShadowSoftness";
         public const string ScleraShadowBend = "_ScleraShadowBend";
+        public const string ScleraShadowRoll = "_ScleraShadowRoll";
         public const string ScleraLidFollow = "_ScleraLidFollow";
 
         // 描画ステート (シェーダーの Pass が参照する)

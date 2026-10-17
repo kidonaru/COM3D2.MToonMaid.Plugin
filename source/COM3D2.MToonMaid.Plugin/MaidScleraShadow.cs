@@ -171,6 +171,7 @@ namespace COM3D2.MToonMaid.Plugin
             _material.SetFloat(MToonProps.ScleraShadowHeight, s.scleraShadowHeight);
             _material.SetFloat(MToonProps.ScleraShadowSoftness, s.scleraShadowSoftness);
             _material.SetFloat(MToonProps.ScleraShadowBend, s.scleraShadowBend);
+            _material.SetFloat(MToonProps.ScleraShadowRoll, s.scleraShadowRoll);
             _material.SetFloat(MToonProps.ScleraLidFollow, s.scleraLidFollow);
         }
 
