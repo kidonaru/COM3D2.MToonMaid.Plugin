@@ -1,6 +1,6 @@
 # COM3D2.MToonMaid.Plugin
 
-v1.2.0.0
+v1.2.1.0
 
 
 - [COM3D2.MToonMaid.Plugin](#com3d2mtoonmaidplugin)
@@ -453,6 +453,9 @@ SceneEditor を導入している場合、ウィンドウは SceneEditor のド�
 
 
 ## 変更履歴
+
+### 2026/10/22 v1.2.1.0
+- 複数メイドで呼んだメイドがメイド一覧に出ず、MToonに変換されない問題を修正
 
 ### 2026/10/18 v1.2.0.0
 - 前髪の影の「強さ」を2まで上げられるようにし、既定を1.5に変更(メイド設定v3)
