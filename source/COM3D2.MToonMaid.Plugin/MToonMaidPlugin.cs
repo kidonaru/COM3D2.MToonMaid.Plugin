@@ -377,14 +377,27 @@ namespace COM3D2.MToonMaid.Plugin
             }
             for (var i = 0; i < mgr.GetMaidCount(); i++)
             {
-                var maid = mgr.GetMaid(i);
-                // 生成直後は body0 / status が揃っていないことがあるため、揃ったメイドだけを扱う
-                if (maid != null && maid.Visible && maid.body0 != null && maid.status != null)
+                AddIfReady(mgr.GetMaid(i));
+            }
+            // GetMaid(i) だけにすると、複数メイドがアクティブスロットに入れずストックのまま表示するメイドが漏れる
+            for (var i = 0; i < mgr.GetStockMaidCount(); i++)
+            {
+                var maid = mgr.GetStockMaid(i);
+                if (!_activeMaids.Contains(maid))
                 {
-                    _activeMaids.Add(maid);
+                    AddIfReady(maid);
                 }
             }
             return _activeMaids;
+        }
+
+        private void AddIfReady(Maid maid)
+        {
+            // 生成直後は body0 / status が揃っていないことがあるため、揃ったメイドだけを扱う
+            if (maid != null && maid.Visible && maid.body0 != null && maid.status != null)
+            {
+                _activeMaids.Add(maid);
+            }
         }
 
         public MaidSettings GetSettings(Maid maid)
